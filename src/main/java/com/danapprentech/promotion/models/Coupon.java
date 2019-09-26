@@ -1,33 +1,46 @@
 package com.danapprentech.promotion.models;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
+@ApiModel(description = "All details about coupon")
 public class Coupon {
 
-    @Id
-    int couponId;
-    int memberId;
-    String couponName;
-    String couponAmount;
-    String couponExpired;
-    String couponStatus;
+    @ApiModelProperty(notes = "Coupon ID")
+    private String couponId;
+    @ApiModelProperty(notes = "Member phone number")
+    private String memberPhone;
+    @ApiModelProperty(notes = "Coupon name")
+    private String couponName;
+    @ApiModelProperty(notes = "Coupon amount")
+    private Long couponAmount;
+    @ApiModelProperty(notes = "Coupon expired")
+    private String couponExpired;
+    @ApiModelProperty(notes = "Coupon status")
+    private String couponStatus;
 
-    public int getCouponId() {
+    @Id
+
+    public String getCouponId() {
         return couponId;
     }
 
-    public void setCouponId(int couponId) {
+    public void setCouponId(String couponId) {
         this.couponId = couponId;
     }
 
-    public int getMemberId() {
-        return memberId;
+    public String getMemberPhone() {
+        return memberPhone;
     }
 
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
+    public void setMemberPhone(String memberPhone) {
+        this.memberPhone = memberPhone;
     }
 
     public String getCouponName() {
@@ -38,11 +51,11 @@ public class Coupon {
         this.couponName = couponName;
     }
 
-    public String getCouponAmount() {
+    public Long getCouponAmount() {
         return couponAmount;
     }
 
-    public void setCouponAmount(String couponAmount) {
+    public void setCouponAmount(Long couponAmount) {
         this.couponAmount = couponAmount;
     }
 
