@@ -37,6 +37,7 @@ public class RepositoryTest {
         List<CouponIssue> couponIssueList = iCouponRepository.getCouponRecommendation (jsonObject);
         assertFalse (couponIssueList.isEmpty ());
     }
+
     @Test
     public void getDetailCouponById(){
         Coupon coupon = iCouponRepository.getCouponDetailsById ("TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");

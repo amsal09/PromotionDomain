@@ -91,11 +91,11 @@ public class CouponRepository implements ICouponRepository {
         logger.info ("Entity manager {}",em);
         try {
 
-            String sql = "from Coupon " +
-                    "where member_id = '"+memberId+"'"+" " +
+            String sql = "from Coupon where member_id = '"+memberId+"'"+" " +
                     "and coupon_expired >= :time " +
                     "and coupon_status = 'available'";
 
+            System.out.println (sql);
             couponList = em.createQuery (sql)
                     .setParameter ("time", new SimpleDateFormat ("yyyy-MM-dd").format(new Date ()))
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)
@@ -121,9 +121,6 @@ public class CouponRepository implements ICouponRepository {
                 couponIssueList.add (couponIssue);
             }
 
-            for(Mcoupon mcoupon:mcouponList){
-                System.out.println (mcoupon.getmCouponAmount ());
-            }
 
         }catch (Exception e){
             em.getTransaction ().rollback ();

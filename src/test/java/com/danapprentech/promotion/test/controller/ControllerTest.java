@@ -73,4 +73,59 @@ public class ControllerTest extends AbstractTest{
         assertTrue(couponsList.length > 0);
     }
 
+    @Test
+    public void createNewCoupon() throws Exception {
+        String uri = "/promotion/create/coupon";
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","USR-02");
+        jsonObject.put ("amount",25000);
+        String expected ="Generate new coupon successfully, and save data by 1 (rows)";
+
+        String inputJson = super.mapToJson (jsonObject);
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content (inputJson)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(expected.equalsIgnoreCase (content));
+    }
+
+    @Test
+    public void updateProduct() throws Exception {
+        String uri = "/promotion/update/coupon";
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("couponId","TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");
+
+        String inputJson = super.mapToJson(jsonObject);
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        assertEquals("true",content);
+    }
+
+    @Test
+    public void createCouponforNewMember() throws Exception {
+        String uri = "/promotion/create/coupon/first";
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","USR-02");
+        jsonObject.put ("status","new member");
+
+        String expected ="Generate new coupon successfully, and save data by 1 (rows)";
+
+        String inputJson = super.mapToJson (jsonObject);
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content (inputJson)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(expected.equalsIgnoreCase (content));
+    }
+
 }

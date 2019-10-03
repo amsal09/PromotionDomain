@@ -51,8 +51,6 @@ public class CouponController {
     @ApiOperation(value = "Get all coupon recommendation based on member id")
     @PostMapping(value = "/recommended")
     public List<CouponIssue> getCouponRecommended(@RequestBody JSONObject jsonObject) {
-        String [] array = jsonObject.get ("paymentMethodCode").toString ().split (",",2);
-        System.out.println (array[1]);
         return iCouponService.getCouponRecommendation (jsonObject);
     }
 
@@ -63,8 +61,8 @@ public class CouponController {
         return "Generate new coupon successfully, and save data by "+rows+" (rows)";
     }
 
-    @ApiOperation(value = "rollback coupon status to be true")
-    @PutMapping("/update/coupon/true")
+    @ApiOperation(value = "update coupon status")
+    @PutMapping("/update/coupon")
     public Boolean couponRedeem(@RequestBody JSONObject jsonObject){
         boolean isSuccess = false;
 
@@ -75,7 +73,7 @@ public class CouponController {
     }
 
     @ApiOperation(value = "Rollback status coupon to be true")
-    @PutMapping("/update/coupon")
+    @PutMapping("/update/coupon/true")
     public String updateCouponStatusTrue(@RequestBody JSONObject jsonObject){
         String response = "failed";
 
