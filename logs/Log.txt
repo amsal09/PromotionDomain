@@ -109,3 +109,38 @@
 2019-10-03 10:51:46,470 INFO com.danapprentech.promotion.test.controller.ControllerTest [main] Started ControllerTest in 5.183 seconds (JVM running for 6.582)
 2019-10-03 10:51:46,760 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [main] Entity manager SessionImpl(1474515510<open>)
 2019-10-03 10:51:46,769 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [main] Entity manager SessionImpl(1225653797<open>)
+2019-10-03 12:40:58,747 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] Starting PromotionApplication on Amsal with PID 719 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-03 12:40:58,750 DEBUG com.danapprentech.promotion.PromotionApplication [restartedMain] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-03 12:40:58,751 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] The following profiles are active: prod
+2019-10-03 12:41:03,994 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] Started PromotionApplication in 5.666 seconds (JVM running for 6.87)
+2019-10-03 12:41:33,398 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(1841175401<open>)
+2019-10-03 12:41:33,409 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(9794628<open>)
+2019-10-03 12:45:09,110 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-3] Entity manager SessionImpl(1050112666<open>)
+2019-10-03 12:45:09,111 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-3] Entity manager SessionImpl(810584888<open>)
+2019-10-03 12:45:33,021 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] Starting PromotionApplication on Amsal with PID 755 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-03 12:45:33,022 DEBUG com.danapprentech.promotion.PromotionApplication [restartedMain] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-03 12:45:33,022 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] The following profiles are active: prod
+2019-10-03 12:45:37,251 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] Started PromotionApplication in 4.483 seconds (JVM running for 6.308)
+2019-10-03 12:46:21,061 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(260883166<open>)
+2019-10-03 12:46:21,070 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(1501841187<open>)
+2019-10-03 12:46:58,364 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-3] Entity manager SessionImpl(1927792480<open>)
+2019-10-03 12:46:58,365 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-3] Entity manager SessionImpl(2082481996<open>)
+2019-10-03 12:47:57,304 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-5] Entity manager SessionImpl(784686684<open>)
+2019-10-03 12:47:57,305 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-5] Entity manager SessionImpl(1808254432<open>)
+2019-10-03 12:55:01,306 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-7] Entity manager SessionImpl(988261283<open>)
+2019-10-03 12:55:01,309 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-7] Entity manager SessionImpl(874529423<open>)
+2019-10-03 12:56:49,462 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-9] Entity manager SessionImpl(362429628<open>)
+2019-10-03 12:56:49,464 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-9] Entity manager SessionImpl(459128959<open>)
+2019-10-03 12:58:58,179 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(2034832015<open>)
+2019-10-03 12:58:58,181 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(1253783193<open>)
+2019-10-03 13:19:36,456 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-4] Entity manager SessionImpl(55793061<open>)
+2019-10-03 13:19:36,458 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-4] start query from Coupon where coupon_id = 'TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3' 
+2019-10-03 13:19:36,467 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-4] SessionImpl(55793061<open>)
+2019-10-03 13:20:30,270 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] Starting PromotionApplication on Amsal with PID 1096 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-03 13:20:30,271 DEBUG com.danapprentech.promotion.PromotionApplication [restartedMain] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-03 13:20:30,271 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] The following profiles are active: prod
+2019-10-03 13:20:34,557 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] Started PromotionApplication in 4.546 seconds (JVM running for 6.293)
+2019-10-03 13:20:37,749 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(1386854732<open>)
+2019-10-03 13:20:37,752 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] start query from Coupon where coupon_id = 'TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3' 
+2019-10-03 13:20:37,880 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(774836751<open>)
+2019-10-03 13:20:37,904 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] SessionImpl(1386854732<open>)

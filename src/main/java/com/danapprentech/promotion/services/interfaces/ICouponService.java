@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import java.util.List;
 
 public interface ICouponService {
-    Coupon getCouponDetailsById(String couponID);
+    CouponIssue getCouponDetailsById(String couponID);
     List<Coupon> getAllCoupons();
     List<CouponIssue> getCouponRecommendation(JSONObject jsonObject);
     Integer saveOrUpdateCoupon(JSONObject jsonObject);

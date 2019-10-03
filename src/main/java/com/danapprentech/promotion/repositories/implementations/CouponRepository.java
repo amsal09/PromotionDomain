@@ -35,8 +35,9 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
-    public Coupon getCouponDetailsById(String couponID) {
+    public CouponIssue getCouponDetailsById(String couponID) {
         Coupon coupon = null;
+        CouponIssue couponIssue =null;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
         logger.info ("Entity manager {}",em);
@@ -46,6 +47,19 @@ public class CouponRepository implements ICouponRepository {
             coupon = em.createQuery (sql, Coupon.class)
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)
                     .getSingleResult ();
+
+            Mcoupon mcoupon = iMasterCouponService.getDetailById (coupon.getmCouponId ());
+
+            couponIssue = new CouponIssue.CouponIssuebuilder ()
+                    .withCouponId (coupon.getCouponId ())
+                    .withMemberId (coupon.getMemberId ())
+                    .withCouponName (mcoupon.getmCouponDescription ())
+                    .withCouponAmount (mcoupon.getmCouponAmount ())
+                    .withPaymentMethod (mcoupon.getPaymentMethod ())
+                    .withCouponStatus (coupon.getCouponStatus ())
+                    .withCouponExpired (coupon.getCouponExpired ())
+                    .build ();
+
             logger.info ("{}",em);
             em.getTransaction ().commit ();
         }catch (Exception e){
@@ -53,7 +67,7 @@ public class CouponRepository implements ICouponRepository {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-        return coupon;
+        return couponIssue;
     }
 
     @Override

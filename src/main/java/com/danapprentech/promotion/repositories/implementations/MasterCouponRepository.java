@@ -54,6 +54,28 @@ public class MasterCouponRepository implements IMasterCouponRepository {
     }
 
     @Override
+    public Mcoupon getDetailById(String mCouponId) {
+
+        Mcoupon mcoupon = null;
+        EntityManager em = getEntityManager ();
+        em.getTransaction ().begin ();
+        logger.info ("Entity manager {}",em);
+        try {
+            String sql = "from Mcoupon where m_coupon_id = '"+mCouponId+"'";
+
+            mcoupon = em.createQuery (sql, Mcoupon.class)
+                    .setLockMode (LockModeType.PESSIMISTIC_WRITE)
+                    .getSingleResult ();
+            em.getTransaction ().commit ();
+        }catch (Exception e){
+            em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+        }
+        em.close ();
+        return mcoupon;
+    }
+
+    @Override
     public Mcoupon getAllById(String mCouponId, Long amount) {
 
         Mcoupon mcoupon = null;
@@ -62,7 +84,8 @@ public class MasterCouponRepository implements IMasterCouponRepository {
         logger.info ("Entity manager {}",em);
         try {
             String sql = "from Mcoupon where m_coupon_id = '"+mCouponId+"'"+"" +
-                    " and m_coupon_amount between 1000 and "+amount;
+                    " and m_coupon_amount between 1000 and "+amount+"" +
+                    "order by m_coupon_amount desc";
 
             mcoupon = em.createQuery (sql, Mcoupon.class)
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)

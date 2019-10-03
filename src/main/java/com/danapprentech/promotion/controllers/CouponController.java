@@ -40,8 +40,8 @@ public class CouponController {
 
     @ApiOperation(value = "Get an coupon by coupon Id")
     @GetMapping(value = "/detail/{couponId}")
-    public Coupon getCouponDetailBasedOnCouponID(@PathVariable String couponId) throws ResourceNotFoundException {
-        Coupon coupon = iCouponService.getCouponDetailsById (couponId);
+    public CouponIssue getCouponDetailBasedOnCouponID(@PathVariable String couponId) throws ResourceNotFoundException {
+        CouponIssue coupon = iCouponService.getCouponDetailsById (couponId);
         if(coupon == null){
             throw new ResourceNotFoundException ("Coupon not found for this id :: " + couponId);
         }

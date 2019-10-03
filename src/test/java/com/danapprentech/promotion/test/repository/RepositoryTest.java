@@ -40,7 +40,7 @@ public class RepositoryTest {
 
     @Test
     public void getDetailCouponById(){
-        Coupon coupon = iCouponRepository.getCouponDetailsById ("TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");
+        CouponIssue coupon = iCouponRepository.getCouponDetailsById ("TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");
         assertEquals ("USR-01", coupon.getMemberId ());
     }
 }

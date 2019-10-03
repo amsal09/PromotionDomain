@@ -18,7 +18,7 @@ public class CouponService implements ICouponService {
     }
 
     @Override
-    public Coupon getCouponDetailsById(String couponID) {
+    public CouponIssue getCouponDetailsById(String couponID) {
         return iCouponRepository.getCouponDetailsById (couponID);
     }
 

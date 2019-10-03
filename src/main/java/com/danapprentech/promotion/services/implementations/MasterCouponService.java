@@ -19,6 +19,11 @@ public class MasterCouponService implements IMasterCouponService {
     }
 
     @Override
+    public Mcoupon getDetailById(String mCouponId) {
+        return iMasterCouponRepository.getDetailById (mCouponId);
+    }
+
+    @Override
     public Mcoupon getAllById(String mCouponId, Long amount) {
         return iMasterCouponRepository.getAllById (mCouponId, amount);
     }
