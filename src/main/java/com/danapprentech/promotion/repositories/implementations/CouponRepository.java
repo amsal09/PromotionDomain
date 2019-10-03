@@ -1,7 +1,13 @@
 package com.danapprentech.promotion.repositories.implementations;
 
 import com.danapprentech.promotion.models.Coupon;
+import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
+import com.danapprentech.promotion.response.CouponIssue;
+import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
@@ -10,6 +16,7 @@ import javax.persistence.LockModeType;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -17,31 +24,14 @@ import java.util.UUID;
 @Transactional
 @Repository
 public class CouponRepository implements ICouponRepository {
+    private static final Logger logger = LoggerFactory.getLogger(CouponRepository.class);
 
     private EntityManagerFactory emf;
-
+    private IMasterCouponService iMasterCouponService;
     @Autowired
-    public CouponRepository(EntityManagerFactory emf) {
+    public CouponRepository(EntityManagerFactory emf, IMasterCouponService iMasterCouponService) {
         this.emf = emf;
-    }
-
-    @Override
-    public List<Coupon> getCouponDetailsByName(String couponName) {
-        List<Coupon> couponList = null;
-        EntityManager em = getEntityManager ();
-        em.getTransaction ().begin ();
-        try {
-            String sql = "from Coupon where coupon_name = '"+couponName+"' " +
-                    "and coupon_status = 'not available'";
-            couponList = em.createQuery (sql)
-                    .setLockMode (LockModeType.PESSIMISTIC_WRITE)
-                    .getResultList ();
-            em.getTransaction ().commit ();
-        }catch (Exception e){
-            em.getTransaction ().rollback ();
-        }
-        em.close ();
-        return couponList;
+        this.iMasterCouponService = iMasterCouponService;
     }
 
     @Override
@@ -49,14 +39,18 @@ public class CouponRepository implements ICouponRepository {
         Coupon coupon = null;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
+        logger.info ("Entity manager {}",em);
         try {
             String sql = "from Coupon where coupon_id = '"+couponID+"'";
+            logger.info ("start query {} ",sql);
             coupon = em.createQuery (sql, Coupon.class)
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)
                     .getSingleResult ();
+            logger.info ("{}",em);
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
         return coupon;
@@ -67,6 +61,7 @@ public class CouponRepository implements ICouponRepository {
         List<Coupon> couponList = null;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
+        logger.info ("Entity manager {}",em);
         try {
             String sql = "from Coupon";
             couponList = em.createQuery (sql, Coupon.class)
@@ -75,23 +70,31 @@ public class CouponRepository implements ICouponRepository {
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
         return couponList;
     }
 
     @Override
-    public List<Coupon> getCouponRecommendation(String memberPhone, Long amount) {
+    public List<CouponIssue> getCouponRecommendation(JSONObject jsonObject) {
         List<Coupon> couponList= null;
+        ArrayList<Mcoupon> mcouponList = new ArrayList<Mcoupon> ();
+        ArrayList<CouponIssue> couponIssueList = new ArrayList<CouponIssue> ();
         EntityManager em = getEntityManager ();
+
+        String memberId = (String) jsonObject.get ("memberId");
+        Number number = (Number) jsonObject.get ("amount");
+        Long value = number.longValue ();
+
         em.getTransaction ().begin ();
+        logger.info ("Entity manager {}",em);
         try {
 
             String sql = "from Coupon " +
-                    "where member_phone = '"+memberPhone+"'"+" " +
-                    "and coupon_amount between 1000 and "+amount+" " +
+                    "where member_id = '"+memberId+"'"+" " +
                     "and coupon_expired >= :time " +
-                    "and coupon_status = 'available' order by coupon_amount desc";
+                    "and coupon_status = 'available'";
 
             couponList = em.createQuery (sql)
                     .setParameter ("time", new SimpleDateFormat ("yyyy-MM-dd").format(new Date ()))
@@ -99,80 +102,86 @@ public class CouponRepository implements ICouponRepository {
                     .getResultList ();
 
             em.getTransaction ().commit ();
+
+            for (Coupon coupon: couponList) {
+                mcouponList.add (iMasterCouponService.getAllById (coupon.getmCouponId (), value));
+            }
+
+            for(int i=0; i<=couponList.size (); i++){
+                CouponIssue couponIssue = new CouponIssue.CouponIssuebuilder ()
+                        .withCouponId (couponList.get (i).getCouponId ())
+                        .withMemberId (couponList.get (i).getMemberId ())
+                        .withCouponAmount (mcouponList.get (i).getmCouponAmount ())
+                        .withCouponName (mcouponList.get (i).getmCouponDescription ())
+                        .withPaymentMethod (mcouponList.get (i).getPaymentMethod ())
+                        .withCouponExpired (couponList.get (i).getCouponExpired ())
+                        .withCouponStatus (couponList.get (i).getCouponStatus ())
+                        .build ();
+
+                couponIssueList.add (couponIssue);
+            }
+
+            for(Mcoupon mcoupon:mcouponList){
+                System.out.println (mcoupon.getmCouponAmount ());
+            }
+
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
 
-        return couponList;
+        return couponIssueList;
     }
 
-    @Override
-    public List<Coupon> getAllCouponByMember(String memberPhone) {
-        List<Coupon> couponList= null;
-        EntityManager em = getEntityManager ();
-        em.getTransaction ().begin ();
-        try {
-            String sql = "from Coupon where member_phone ='" +memberPhone+"'"+" " +
-                    "order by coupon_amount desc";
-
-            couponList = em.createQuery (sql, Coupon.class)
-                    .setLockMode (LockModeType.PESSIMISTIC_WRITE)
-                    .getResultList ();
-
-            em.getTransaction ().commit ();
-        }catch (Exception e){
-            em.getTransaction ().rollback ();
-        }
-        em.close ();
-        return couponList;
-    }
 
     @Override
-    public Integer saveOrUpdate(String memberPhone,Long amount) {
+    public Integer saveOrUpdate(JSONObject jsonObject) {
         EntityManager em = getEntityManager ();
-        long getVoucher = 0L;
-        LocalDate ld = LocalDate.now ().plusDays (4);
         em.getTransaction ().begin ();
         int saveCount = 0;
-        String uniqueId = "CPN-";
-        uniqueId += UUID.randomUUID().toString();
+        String uniqueId = "TCPN-";
+        logger.info ("Entity manager {}",em);
         try {
+            LocalDate ld = LocalDate.now ().plusDays (20);
+            uniqueId += UUID.randomUUID().toString();
+            Number number = (Number) jsonObject.get ("amount");
+            Long value = number.longValue ();
+            String memberID = (String) jsonObject.get ("memberId");
 
-            String sql = "INSERT into Coupon (coupon_id,member_phone,coupon_name, " +
-                    "coupon_amount, coupon_status, coupon_expired)" +
-                    "values(?,?,?,?,?,?)";
+            List<Mcoupon> mcoupons = iMasterCouponService.checkMinimumTransaction (value);
 
-            if(amount % 25000 == 0){
-                getVoucher = (amount/25000) * 3000;
+            String sql = "INSERT into Coupon (coupon_id,member_id,m_coupon_id, " +
+                    "coupon_status, coupon_expired)" +
+                    "values(?,?,?,?,?)";
 
-            }else{
-                getVoucher = (int)(amount/25000) * 3000;
-            }
             saveCount = em.createNativeQuery (sql)
                     .setParameter (1,uniqueId)
-                    .setParameter (2,memberPhone)
-                    .setParameter (3,"Coupon Pulsa "+getVoucher)
-                    .setParameter (4,getVoucher)
-                    .setParameter (5,"available")
-                    .setParameter (6,ld.toString ())
+                    .setParameter (2,memberID)
+                    .setParameter (3,mcoupons.get (0).getmCouponId ())
+                    .setParameter (4,"available")
+                    .setParameter (5,ld.toString ())
                     .executeUpdate ();
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
         return saveCount;
     }
 
     @Override
-    public Integer updateStatus(String couponID) {
+    public Integer updateStatus(JSONObject jsonObject) {
 
         int updateCount = 0;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
+        logger.info ("Entity manager {}",em);
         try {
-            String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'";
+            String couponID = (String) jsonObject.get ("couponId");
+            String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
+                    +"and coupon_status = 'available'";
 
             updateCount = em.createNativeQuery (sql)
                     .executeUpdate ();
@@ -180,9 +189,67 @@ public class CouponRepository implements ICouponRepository {
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
         return updateCount;
+    }
+
+    @Override
+    public Integer updateStatusTrue(JSONObject jsonObject) {
+        int updateCount = 0;
+        EntityManager em = getEntityManager ();
+        em.getTransaction ().begin ();
+        logger.info ("Entity manager {}",em);
+        try {
+            String couponID = (String) jsonObject.get ("couponId");
+            String sql = "update Coupon set coupon_status = 'available' where coupon_id = '"+couponID+"'"
+                    +" and coupon_status ='not available'";
+
+            updateCount = em.createNativeQuery (sql)
+                    .executeUpdate ();
+
+            em.getTransaction ().commit ();
+        }catch (Exception e){
+            em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+        }
+        em.close ();
+        return updateCount;
+    }
+
+    @Override
+    public Integer firstCoupon(JSONObject jsonObject) {
+        EntityManager em = getEntityManager ();
+        em.getTransaction ().begin ();
+        int saveCount = 0;
+        String uniqueId = "TCPN-";
+        logger.info ("Entity manager {}",em);
+        try {
+            LocalDate ld = LocalDate.now ().plusDays (10);
+            uniqueId += UUID.randomUUID().toString();
+            String memberID = (String) jsonObject.get ("memberId");
+
+            Mcoupon mcoupon = iMasterCouponService.getCouponNewMember ((String) jsonObject.get ("status"));
+
+            String sql = "INSERT into Coupon (coupon_id,member_id,m_coupon_id, " +
+                    "coupon_status, coupon_expired)" +
+                    "values(?,?,?,?,?)";
+
+            saveCount = em.createNativeQuery (sql)
+                    .setParameter (1,uniqueId)
+                    .setParameter (2,memberID)
+                    .setParameter (3,mcoupon.getmCouponId ())
+                    .setParameter (4,"available")
+                    .setParameter (5,ld.toString ())
+                    .executeUpdate ();
+            em.getTransaction ().commit ();
+        }catch (Exception e){
+            em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+        }
+        em.close ();
+        return saveCount;
     }
 
     private EntityManager getEntityManager(){

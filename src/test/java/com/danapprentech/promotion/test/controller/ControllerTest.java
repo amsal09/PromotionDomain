@@ -1,6 +1,8 @@
 package com.danapprentech.promotion.test.controller;
 
 import com.danapprentech.promotion.models.Coupon;
+import com.danapprentech.promotion.response.CouponIssue;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,28 +36,11 @@ public class ControllerTest extends AbstractTest{
     }
 
     @Test
-    public void getCouponByName() throws Exception {
-        String uri = "/promotion/detail/coupon/Coupon_5K";
-        Coupon coupon = new Coupon ();
-        coupon.setCouponName ("Coupon_5K");
-        String inputJson = super.mapToJson (coupon);
-
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(inputJson)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        Coupon[] couponsList = super.mapFromJson(content, Coupon[].class);
-        assertTrue(couponsList.length > 0);
-    }
-
-    @Test
     public void getCouponById() throws Exception {
-        String uri = "/promotion/detail/1";
-        Coupon coupon = new Coupon ();
-        coupon.setMemberPhone ("0986726");
+        String uri = "/promotion/detail/TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4";
+        Coupon coupon = new Coupon.CouponBuilder ()
+                .withMemberId ("USR-01")
+                .build ();
         String inputJson = super.mapToJson (coupon);
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
@@ -66,24 +51,25 @@ public class ControllerTest extends AbstractTest{
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
         Coupon coupons = super.mapFromJson(content, Coupon.class);
-        assertTrue(coupons.getMemberPhone ().equals ("0986726"));
+        assertTrue(coupons.getMemberId ().equals ("USR-01"));
     }
 
     @Test
     public void getCouponRecommendation() throws Exception {
         String uri = "/promotion/recommended";
-        Coupon coupon = new Coupon ();
-        coupon.setMemberPhone ("0986726");
-        coupon.setCouponAmount (25000L);
-        String inputJson = super.mapToJson (coupon);
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","USR-02");
+        jsonObject.put ("amount",25000);
+
+        String inputJson = super.mapToJson (jsonObject);
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(inputJson)).andReturn();
+                .content (inputJson)).andReturn();
 
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
-        Coupon[] couponsList = super.mapFromJson(content, Coupon[].class);
+        CouponIssue[] couponsList = super.mapFromJson(content, CouponIssue[].class);
         assertTrue(couponsList.length > 0);
     }
 
