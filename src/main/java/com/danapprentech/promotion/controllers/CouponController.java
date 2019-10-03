@@ -63,13 +63,8 @@ public class CouponController {
 
     @ApiOperation(value = "update coupon status")
     @PutMapping("/update/coupon")
-    public Boolean couponRedeem(@RequestBody JSONObject jsonObject){
-        boolean isSuccess = false;
-
-        if(iCouponService.updateStatus (jsonObject) !=0){
-            isSuccess = true;
-        }
-        return isSuccess;
+    public CouponIssue couponRedeem(@RequestBody JSONObject jsonObject){
+        return iCouponService.updateStatus (jsonObject);
     }
 
     @ApiOperation(value = "Rollback status coupon to be true")

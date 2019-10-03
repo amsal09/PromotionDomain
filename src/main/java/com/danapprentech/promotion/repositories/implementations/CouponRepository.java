@@ -4,6 +4,7 @@ import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
 import com.danapprentech.promotion.response.CouponIssue;
+import com.danapprentech.promotion.services.interfaces.ICouponService;
 import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -28,8 +29,10 @@ public class CouponRepository implements ICouponRepository {
 
     private EntityManagerFactory emf;
     private IMasterCouponService iMasterCouponService;
+
     @Autowired
-    public CouponRepository(EntityManagerFactory emf, IMasterCouponService iMasterCouponService) {
+    public CouponRepository(EntityManagerFactory emf,
+                            IMasterCouponService iMasterCouponService) {
         this.emf = emf;
         this.iMasterCouponService = iMasterCouponService;
     }
@@ -183,19 +186,27 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
-    public Integer updateStatus(JSONObject jsonObject) {
+    public CouponIssue updateStatus(JSONObject jsonObject) {
 
-        int updateCount = 0;
+//        CouponIssue couponIssueNew = null;
+        int updateCount=0;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
         logger.info ("Entity manager {}",em);
+        String couponID = (String) jsonObject.get ("couponId");
+        String paymentCode = (String) jsonObject.get ("paymentMethodCode");
         try {
-            String couponID = (String) jsonObject.get ("couponId");
-            String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
-                    +"and coupon_status = 'available'";
 
-            updateCount = em.createNativeQuery (sql)
-                    .executeUpdate ();
+            CouponIssue couponIssue = getCouponDetailsById (couponID);
+
+            if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
+
+                String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
+                        +"and coupon_status = 'available'";
+
+                updateCount = em.createNativeQuery (sql)
+                        .executeUpdate ();
+            }
 
             em.getTransaction ().commit ();
         }catch (Exception e){
@@ -203,7 +214,7 @@ public class CouponRepository implements ICouponRepository {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-        return updateCount;
+        return getCouponDetailsById (couponID);
     }
 
     @Override

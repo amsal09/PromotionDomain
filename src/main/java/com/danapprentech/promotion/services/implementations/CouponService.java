@@ -39,7 +39,7 @@ public class CouponService implements ICouponService {
     }
 
     @Override
-    public Integer updateStatus(JSONObject jsonObject) {
+    public CouponIssue updateStatus(JSONObject jsonObject) {
 
         return iCouponRepository.updateStatus (jsonObject);
     }

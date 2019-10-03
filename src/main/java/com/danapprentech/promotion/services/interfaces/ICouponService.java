@@ -11,7 +11,7 @@ public interface ICouponService {
     List<Coupon> getAllCoupons();
     List<CouponIssue> getCouponRecommendation(JSONObject jsonObject);
     Integer saveOrUpdateCoupon(JSONObject jsonObject);
-    Integer updateStatus(JSONObject jsonObject);
+    CouponIssue updateStatus(JSONObject jsonObject);
     Integer updateStatusTrue(JSONObject jsonObject);
     Integer firstCoupon(JSONObject jsonObject);
 }
