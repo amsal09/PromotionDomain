@@ -1,7 +1,6 @@
 package com.danapprentech.promotion.controllers;
 
 import com.danapprentech.promotion.exception.ParserExeption;
-import com.danapprentech.promotion.exception.ResourceNotFoundException;
 import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
@@ -76,7 +75,7 @@ public class CouponController {
         BaseResponse baseResponse = null;
         try {
             couponList = iCouponService.getCouponRecommendation (jsonObject);
-            if(couponList!=null){
+            if(!couponList.isEmpty ()){
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (200)
                         .withMessage ("Success")
