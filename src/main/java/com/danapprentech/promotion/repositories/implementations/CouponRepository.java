@@ -4,7 +4,7 @@ import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
 import com.danapprentech.promotion.response.CouponIssue;
-import com.danapprentech.promotion.services.interfaces.ICouponService;
+import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -27,15 +27,13 @@ import java.util.UUID;
 public class CouponRepository implements ICouponRepository {
     private static final Logger logger = LoggerFactory.getLogger(CouponRepository.class);
 
-    private EntityManagerFactory emf;
-    private IMasterCouponService iMasterCouponService;
-
     @Autowired
-    public CouponRepository(EntityManagerFactory emf,
-                            IMasterCouponService iMasterCouponService) {
-        this.emf = emf;
-        this.iMasterCouponService = iMasterCouponService;
-    }
+    private EntityManagerFactory emf;
+    @Autowired
+    private IMasterCouponService iMasterCouponService;
+    @Autowired
+    private ICouponHistoryService iCouponHistoryService;
+
 
     @Override
     public CouponIssue getCouponDetailsById(String couponID) {
@@ -176,6 +174,13 @@ public class CouponRepository implements ICouponRepository {
                     .setParameter (4,"available")
                     .setParameter (5,ld.toString ())
                     .executeUpdate ();
+
+            if(saveCount!=0){
+                String getResponse = iCouponHistoryService.addHistory (jsonObject);
+                while (getResponse.equalsIgnoreCase ("failed")){
+                    getResponse = iCouponHistoryService.addHistory (jsonObject);
+                }
+            }
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
@@ -188,7 +193,6 @@ public class CouponRepository implements ICouponRepository {
     @Override
     public CouponIssue updateStatus(JSONObject jsonObject) {
 
-//        CouponIssue couponIssueNew = null;
         int updateCount=0;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();

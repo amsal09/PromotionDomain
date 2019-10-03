@@ -3,6 +3,7 @@ package com.danapprentech.promotion.controllers;
 import com.danapprentech.promotion.exception.ParserExeption;
 import com.danapprentech.promotion.exception.ResourceNotFoundException;
 import com.danapprentech.promotion.models.Coupon;
+import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
 import io.swagger.annotations.*;
@@ -24,7 +25,7 @@ public class CouponController {
         this.iCouponService = iCouponService;
     }
 
-    @ApiOperation(value = "View a list of available employees", response = List.class)
+    @ApiOperation(value = "View a list of available coupon", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -40,31 +41,122 @@ public class CouponController {
 
     @ApiOperation(value = "Get an coupon by coupon Id")
     @GetMapping(value = "/detail/{couponId}")
-    public CouponIssue getCouponDetailBasedOnCouponID(@PathVariable String couponId) throws ResourceNotFoundException {
-        CouponIssue coupon = iCouponService.getCouponDetailsById (couponId);
-        if(coupon == null){
-            throw new ResourceNotFoundException ("Coupon not found for this id :: " + couponId);
+    public BaseResponse getCouponDetailBasedOnCouponID(@PathVariable String couponId) {
+        CouponIssue coupon = null;
+        BaseResponse baseResponse=null;
+        try {
+            coupon = iCouponService.getCouponDetailsById (couponId);
+            if(coupon!=null){
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Success")
+                        .withData (coupon)
+                        .build ();
+            }else {
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Coupon not found for this id :: " + couponId)
+                        .withData (coupon)
+                        .build ();
+            }
+        }catch (Exception e){
+            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (400)
+                    .withMessage (e.getMessage ())
+                    .withData ("Coupon not found for this id :: " + couponId)
+                    .build ();
         }
-        return coupon;
+        return baseResponse;
     }
 
     @ApiOperation(value = "Get all coupon recommendation based on member id")
     @PostMapping(value = "/recommended")
-    public List<CouponIssue> getCouponRecommended(@RequestBody JSONObject jsonObject) {
-        return iCouponService.getCouponRecommendation (jsonObject);
+    public BaseResponse getCouponRecommended(@RequestBody JSONObject jsonObject) {
+        List<CouponIssue> couponList =null;
+        BaseResponse baseResponse = null;
+        try {
+            couponList = iCouponService.getCouponRecommendation (jsonObject);
+            if(couponList!=null){
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Success")
+                        .withData (couponList)
+                        .build ();
+            }else {
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("No coupon available for this member")
+                        .withData (couponList)
+                        .build ();
+            }
+        }catch (Exception e){
+            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (400)
+                    .withMessage (e.getMessage ())
+                    .withData (couponList)
+                    .build ();
+        }
+        return baseResponse;
     }
 
     @ApiOperation(value = "Create coupon based on amount transaction")
     @PostMapping(value = "/create/coupon")
-    public String createCoupon(@RequestBody JSONObject jsonObject){
-        int rows = iCouponService.saveOrUpdateCoupon (jsonObject);
-        return "Generate new coupon successfully, and save data by "+rows+" (rows)";
+    public BaseResponse createCoupon(@RequestBody JSONObject jsonObject){
+        BaseResponse baseResponse = null;
+        try {
+            int rows = iCouponService.saveOrUpdateCoupon (jsonObject);
+            if(rows!=0){
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Success")
+                        .withData ("Generate new coupon successfully, and save data by "+rows+" (rows)")
+                        .build ();
+            }else {
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Failed to generate coupon")
+                        .withData ("null")
+                        .build ();
+            }
+        }catch (Exception e){
+            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (400)
+                    .withMessage (e.getMessage ())
+                    .withData ("null")
+                    .build ();
+        }
+
+        return baseResponse;
     }
 
     @ApiOperation(value = "update coupon status")
     @PutMapping("/update/coupon")
-    public CouponIssue couponRedeem(@RequestBody JSONObject jsonObject){
-        return iCouponService.updateStatus (jsonObject);
+    public BaseResponse couponRedeem(@RequestBody JSONObject jsonObject){
+        BaseResponse baseResponse = null;
+        CouponIssue couponIssue =null;
+        try {
+            couponIssue = iCouponService.updateStatus (jsonObject);
+            if(couponIssue!=null){
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Success")
+                        .withData (couponIssue)
+                        .build ();
+            }else {
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("No coupon available for this member")
+                        .withData (couponIssue)
+                        .build ();
+            }
+        }catch (Exception e){
+            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (400)
+                    .withMessage (e.getMessage ())
+                    .withData (couponIssue)
+                    .build ();
+        }
+        return baseResponse;
     }
 
     @ApiOperation(value = "Rollback status coupon to be true")
