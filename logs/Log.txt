@@ -144,3 +144,5 @@
 2019-10-03 13:20:37,752 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] start query from Coupon where coupon_id = 'TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3' 
 2019-10-03 13:20:37,880 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-1] Entity manager SessionImpl(774836751<open>)
 2019-10-03 13:20:37,904 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-1] SessionImpl(1386854732<open>)
+2019-10-03 13:25:32,710 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [http-nio-8084-exec-4] Entity manager SessionImpl(1011641229<open>)
+2019-10-03 13:25:32,717 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [http-nio-8084-exec-4] Entity manager SessionImpl(1038827833<open>)

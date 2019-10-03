@@ -29,7 +29,7 @@ public class Consumer {
 //        couponController.couponRedeem (data);
 //    }
 
-    @RabbitListener(queues = "${promotion.rabbitmq.queue2}")
+    @RabbitListener(queues = "${promotion.rabbitmq.queue}")
     public void receiveMsgCreateCoupon(byte[] message) throws Exception {
         String response = new String(message);
         System.out.println ("Receive: "+response);
