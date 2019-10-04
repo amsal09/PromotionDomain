@@ -1,7 +1,9 @@
 package com.danapprentech.promotion.broker;
 
 import com.danapprentech.promotion.controllers.CouponController;
+import com.danapprentech.promotion.exception.ResourceNotFoundException;
 import com.danapprentech.promotion.models.Couponhistory;
+import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,14 +15,12 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @Component
 public class Consumer {
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
     @Autowired
     private CouponController couponController;
     private ICouponHistoryService iCouponHistoryService;
-
     private JSONParser jsonParser = new JSONParser();
 
 //    @RabbitListener(queues = "${promotion.rabbitmq.queue}")
@@ -34,27 +34,32 @@ public class Consumer {
 //    }
 
     @RabbitListener(queues = "${promotion.rabbitmq.queue}")
-    public void receiveMsgCreateCoupon(byte[] message){
+    public void receiveMsgCreateCoupon(byte[] message) throws ResourceNotFoundException {
+        JSONObject data = null;
         try {
             String response = new String(message);
-            System.out.println ("Receive: "+response);
+            logger.info ("message body from payment: {} ",response);
             Object obj = jsonParser.parse(response);
-            JSONObject data = (JSONObject) obj;
+            data = (JSONObject) obj;
             String paymentId = (String) data.get ("paymentId");
+            logger.info ("Try to get coupon history with payment id: {}",paymentId);
+
             Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
-            if(couponhistory == null){
-                String status = (String) data.get ("status");
-                if(status.equalsIgnoreCase ("success")){
-                    couponController.createCoupon (data);
-                }else{
-                    String getResponse = couponController.updateCouponStatusTrue (data);
-                    while (getResponse.equalsIgnoreCase ("failed")){
-                        getResponse = couponController.updateCouponStatusTrue (data);
-                    }
-                }
-                logger.info ("message body from payment: {} ",response);
-            }
+
         }catch (Exception e){
+            assert data != null;
+            String status = (String) data.get ("status");
+            if(status.equalsIgnoreCase ("success")){
+                logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
+                couponController.createCoupon (data);
+            }else{
+                logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
+                BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
+                System.out.println (baseResponse.getData ().toString ());
+                    while (baseResponse.getMessage ().equalsIgnoreCase ("failed")){
+                        baseResponse = couponController.updateCouponStatusTrue (data);
+                    }
+            }
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
 

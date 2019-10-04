@@ -160,30 +160,60 @@ public class CouponController {
 
     @ApiOperation(value = "Rollback status coupon to be true")
     @PutMapping("/update/coupon/true")
-    public String updateCouponStatusTrue(@RequestBody JSONObject jsonObject){
-        String response = "failed";
-
-        if(iCouponService.updateStatusTrue (jsonObject) !=0){
-            response="rollback coupon status successfully";
+    public BaseResponse updateCouponStatusTrue(@RequestBody JSONObject jsonObject){
+        BaseResponse baseResponse = null;
+        try{
+            if(iCouponService.updateStatusTrue (jsonObject) !=0){
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Success")
+                        .withData ("rollback coupon status successfully")
+                        .build ();
+            }else{
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Failed")
+                        .withData ("null")
+                        .build ();
+            }
+        }catch (Exception e){
+            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (400)
+                    .withMessage (e.getMessage ())
+                    .withData ("null")
+                    .build ();
         }
-        return response;
+        return baseResponse;
     }
 
     @ApiOperation(value = "Create new coupon for new member")
     @PostMapping(value = "/create/coupon/first")
-    public String createCouponForNewMember(@RequestBody String body) throws ParserExeption {
+    public BaseResponse createCouponForNewMember(@RequestBody String body) throws ParserExeption {
         JSONParser parser = new JSONParser ();
         JSONObject jsonObject;
         String response="failed";
+        BaseResponse baseResponse = null;
         try {
             jsonObject = (JSONObject) parser.parse (body);
+            int rows = iCouponService.firstCoupon (jsonObject);
+            if(rows !=0){
+                response = "Generate new coupon successfully, and save data by "+rows+" (rows)";
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Success")
+                        .withData (response)
+                        .build ();
+            }else{
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (200)
+                        .withMessage ("Failed to save data")
+                        .withData ("null")
+                        .build ();
+            }
         }catch (Exception e){
             throw new ParserExeption ("Failed to parse string to JSON");
         }
-        int rows = iCouponService.firstCoupon (jsonObject);
-        if(rows !=0){
-            response = "Generate new coupon successfully, and save data by "+rows+" (rows)";
-        }
-        return response;
+
+        return baseResponse;
     }
 }
