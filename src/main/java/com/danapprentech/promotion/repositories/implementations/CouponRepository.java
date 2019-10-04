@@ -121,7 +121,7 @@ public class CouponRepository implements ICouponRepository {
             for (Coupon coupon: couponList) {
                 mcouponList.add (iMasterCouponService.getAllById (coupon.getmCouponId (), value));
             }
-            for(int i=0; i<=couponList.size (); i++){
+            for(int i=0; i<couponList.size (); i++){
                 CouponIssue couponIssue = new CouponIssue.CouponIssuebuilder ()
                         .withCouponId (couponList.get (i).getCouponId ())
                         .withMemberId (couponList.get (i).getMemberId ())
