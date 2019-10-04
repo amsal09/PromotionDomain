@@ -53,4 +53,9 @@ public class CouponService implements ICouponService {
     public Integer firstCoupon(JSONObject jsonObject) {
         return iCouponRepository.firstCoupon (jsonObject);
     }
+
+    @Override
+    public Coupon checkForNewMember(String memberId, String mCouponId) {
+        return iCouponRepository.checkForNewMember (memberId,mCouponId);
+    }
 }

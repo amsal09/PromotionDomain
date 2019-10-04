@@ -8,7 +8,10 @@ import com.danapprentech.promotion.services.interfaces.ICouponService;
 import io.swagger.annotations.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.List;
 @RequestMapping("/promotion")
 @Api(value="Coupon Domain", description="Operation for coupon issue, coupon redeem and generate coupon based on payment amount")
 public class CouponController {
+    private static final Logger logger = LoggerFactory.getLogger(CouponController.class);
     private ICouponService iCouponService;
     @Autowired
     public CouponController(ICouponService iCouponService) {
@@ -34,7 +38,7 @@ public class CouponController {
 
     @GetMapping(value = "/all")
     public List<Coupon> getAllCoupon(){
-
+        logger.info ("get all coupon");
         return iCouponService.getAllCoupons ();
     }
 
@@ -44,23 +48,28 @@ public class CouponController {
         CouponIssue coupon = null;
         BaseResponse baseResponse=null;
         try {
+            logger.info ("try to get detail coupon");
             coupon = iCouponService.getCouponDetailsById (couponId);
             if(coupon!=null){
+                logger.info ("coupon exist with coupon id: {}", couponId);
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Success")
                         .withData (coupon)
                         .build ();
             }else {
+                logger.info ("coupon does not exist with coupon id: {}", couponId);
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Coupon not found for this id :: " + couponId)
                         .withData (coupon)
                         .build ();
             }
         }catch (Exception e){
+            logger.warn ("Error: {} with coupon id: {}",e.getMessage (), couponId);
+            logger.warn ("{}",e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (400)
+                    .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
                     .withData ("Coupon not found for this id :: " + couponId)
                     .build ();
@@ -74,23 +83,28 @@ public class CouponController {
         List<CouponIssue> couponList =null;
         BaseResponse baseResponse = null;
         try {
+            logger.info ("try to get coupon recommendation");
             couponList = iCouponService.getCouponRecommendation (jsonObject);
             if(!couponList.isEmpty ()){
+                logger.info ("Get coupon recommendation success with member id: {}", jsonObject.get ("memberId"));
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Success")
                         .withData (couponList)
                         .build ();
             }else {
+                logger.info ("Get coupon recommendation failed with member id: {}", jsonObject.get ("memberId"));
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("No coupon available for this member")
                         .withData (couponList)
                         .build ();
             }
         }catch (Exception e){
+            logger.warn ("Error: {} when to get coupon recommendation",e.getMessage ());
+            logger.warn ("{}",e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (400)
+                    .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
                     .withData (couponList)
                     .build ();
@@ -105,21 +119,25 @@ public class CouponController {
         try {
             int rows = iCouponService.saveOrUpdateCoupon (jsonObject);
             if(rows!=0){
+                logger.info ("Created coupon success");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.CREATED.value ())
                         .withMessage ("Success")
                         .withData ("Generate new coupon successfully, and save data by "+rows+" (rows)")
                         .build ();
             }else {
+                logger.info ("Created coupon failed");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Failed to generate coupon")
                         .withData ("null")
                         .build ();
             }
         }catch (Exception e){
+            logger.warn ("Error: {} when to create new coupon",e.getMessage ());
+            logger.warn ("{}",e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (400)
+                    .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
                     .withData ("null")
                     .build ();
@@ -134,23 +152,28 @@ public class CouponController {
         BaseResponse baseResponse = null;
         CouponIssue couponIssue =null;
         try {
+            logger.info ("try to update coupon status");
             couponIssue = iCouponService.updateStatus (jsonObject);
-            if(couponIssue!=null){
+            if(couponIssue.getCouponStatus ().equals ("not available")){
+                logger.info ("update coupon status success");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Success")
                         .withData (couponIssue)
                         .build ();
             }else {
+                logger.info ("update coupon status failed");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("No coupon available for this member")
                         .withData (couponIssue)
                         .build ();
             }
         }catch (Exception e){
+            logger.warn ("Error: {}",e.getMessage ());
+            logger.warn ("Stacktrace: {}",e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (400)
+                    .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
                     .withData (couponIssue)
                     .build ();
@@ -163,22 +186,27 @@ public class CouponController {
     public BaseResponse updateCouponStatusTrue(@RequestBody JSONObject jsonObject){
         BaseResponse baseResponse = null;
         try{
+            logger.info ("try to update coupon status to be true");
             if(iCouponService.updateStatusTrue (jsonObject) !=0){
+                logger.info ("update coupon status success");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Success")
                         .withData ("rollback coupon status successfully")
                         .build ();
             }else{
+                logger.info ("update coupon status failed");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Failed")
                         .withData ("null")
                         .build ();
             }
         }catch (Exception e){
+            logger.warn ("Error: {}",e.getMessage ());
+            logger.warn ("Stacktrace: {}",e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (400)
+                    .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
                     .withData ("null")
                     .build ();
@@ -194,23 +222,28 @@ public class CouponController {
         String response="failed";
         BaseResponse baseResponse = null;
         try {
+            logger.info ("try to update coupon status to be true");
             jsonObject = (JSONObject) parser.parse (body);
             int rows = iCouponService.firstCoupon (jsonObject);
             if(rows !=0){
+                logger.info ("generate new coupon for new member success");
                 response = "Generate new coupon successfully, and save data by "+rows+" (rows)";
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Success")
                         .withData (response)
                         .build ();
             }else{
+                logger.info ("generate new coupon for new member failed");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (200)
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("Failed to save data")
-                        .withData ("null")
+                        .withData (response)
                         .build ();
             }
         }catch (Exception e){
+            logger.warn ("Error: {}",e.getMessage ());
+            logger.warn ("Stacktrace: {}",e.getStackTrace ());
             throw new ParserExeption ("Failed to parse string to JSON");
         }
 

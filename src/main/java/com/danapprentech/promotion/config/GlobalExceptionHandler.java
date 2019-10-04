@@ -15,12 +15,12 @@ import java.util.Date;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.valueOf (400), ex.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST, ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> globleExcpetionHandler(Exception ex, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.valueOf (400), ex.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), HttpStatus.BAD_REQUEST ,ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -192,13 +192,13 @@ public class CouponRepository implements ICouponRepository {
 
     @Override
     public CouponIssue updateStatus(JSONObject jsonObject) {
-
         int updateCount=0;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
         logger.info ("Entity manager {}",em);
         String couponID = (String) jsonObject.get ("couponId");
         String paymentCode = (String) jsonObject.get ("paymentMethodCode");
+        CouponIssue responCouponIssue = null;
         try {
 
             CouponIssue couponIssue = getCouponDetailsById (couponID);
@@ -210,6 +210,10 @@ public class CouponRepository implements ICouponRepository {
 
                 updateCount = em.createNativeQuery (sql)
                         .executeUpdate ();
+                if(updateCount==1){
+                    responCouponIssue = getCouponDetailsById (couponID);
+                }
+                System.out.println (updateCount);
             }
 
             em.getTransaction ().commit ();
@@ -218,7 +222,7 @@ public class CouponRepository implements ICouponRepository {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-        return getCouponDetailsById (couponID);
+        return responCouponIssue;
     }
 
     @Override
@@ -252,30 +256,60 @@ public class CouponRepository implements ICouponRepository {
         String uniqueId = "TCPN-";
         logger.info ("Entity manager {}",em);
         try {
+
             LocalDate ld = LocalDate.now ().plusDays (10);
             uniqueId += UUID.randomUUID().toString();
             String memberID = (String) jsonObject.get ("memberId");
 
             Mcoupon mcoupon = iMasterCouponService.getCouponNewMember ((String) jsonObject.get ("status"));
+            Coupon coupon = checkForNewMember (memberID,mcoupon.getmCouponId ());
+            if(coupon ==null){
+                String sql = "INSERT into Coupon (coupon_id,member_id,m_coupon_id, " +
+                        "coupon_status, coupon_expired)" +
+                        "values(?,?,?,?,?)";
 
-            String sql = "INSERT into Coupon (coupon_id,member_id,m_coupon_id, " +
-                    "coupon_status, coupon_expired)" +
-                    "values(?,?,?,?,?)";
+                saveCount = em.createNativeQuery (sql)
+                        .setParameter (1,uniqueId)
+                        .setParameter (2,memberID)
+                        .setParameter (3,mcoupon.getmCouponId ())
+                        .setParameter (4,"available")
+                        .setParameter (5,ld.toString ())
+                        .executeUpdate ();
+            }
 
-            saveCount = em.createNativeQuery (sql)
-                    .setParameter (1,uniqueId)
-                    .setParameter (2,memberID)
-                    .setParameter (3,mcoupon.getmCouponId ())
-                    .setParameter (4,"available")
-                    .setParameter (5,ld.toString ())
-                    .executeUpdate ();
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+            return saveCount;
         }
         em.close ();
         return saveCount;
+    }
+
+    @Override
+    public Coupon checkForNewMember(String memberId, String mCouponId) {
+        Coupon coupon = null;
+        EntityManager em = getEntityManager ();
+        em.getTransaction ().begin ();
+        logger.info ("Entity manager {}",em);
+        try {
+            String sql = "from Coupon where member_id = '"+memberId+"'"+"" +
+                    "and m_coupon_id='"+mCouponId+"'";
+            logger.info ("start query {} ",sql);
+            coupon = em.createQuery (sql, Coupon.class)
+                    .setLockMode (LockModeType.PESSIMISTIC_WRITE)
+                    .getSingleResult ();
+
+            logger.info ("{}",em);
+            em.getTransaction ().commit ();
+        }catch (Exception e){
+            em.getTransaction ().rollback ();
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+            return coupon;
+        }
+        em.close ();
+        return coupon;
     }
 
     private EntityManager getEntityManager(){
