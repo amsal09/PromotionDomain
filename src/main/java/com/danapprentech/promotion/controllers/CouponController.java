@@ -127,7 +127,7 @@ public class CouponController {
                         .build ();
             }else {
                 logger.info ("Created coupon failed");
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                baseResponse= new BaseResponse.BaseResponseBuilder()
                         .withCode (HttpStatus.OK.value ())
                         .withMessage ("Failed to generate coupon")
                         .withData ("null")
@@ -246,7 +246,6 @@ public class CouponController {
             logger.warn ("Stacktrace: {}",e.getStackTrace ());
             throw new ParserExeption ("Failed to parse string to JSON");
         }
-
         return baseResponse;
     }
 }

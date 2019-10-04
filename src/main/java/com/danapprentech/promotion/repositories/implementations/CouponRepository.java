@@ -121,7 +121,6 @@ public class CouponRepository implements ICouponRepository {
             for (Coupon coupon: couponList) {
                 mcouponList.add (iMasterCouponService.getAllById (coupon.getmCouponId (), value));
             }
-
             for(int i=0; i<=couponList.size (); i++){
                 CouponIssue couponIssue = new CouponIssue.CouponIssuebuilder ()
                         .withCouponId (couponList.get (i).getCouponId ())
@@ -135,8 +134,6 @@ public class CouponRepository implements ICouponRepository {
 
                 couponIssueList.add (couponIssue);
             }
-
-
         }catch (Exception e){
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
@@ -145,7 +142,6 @@ public class CouponRepository implements ICouponRepository {
 
         return couponIssueList;
     }
-
 
     @Override
     public Integer saveOrUpdate(JSONObject jsonObject) {
@@ -200,9 +196,7 @@ public class CouponRepository implements ICouponRepository {
         String paymentCode = (String) jsonObject.get ("paymentMethodCode");
         CouponIssue responCouponIssue = null;
         try {
-
             CouponIssue couponIssue = getCouponDetailsById (couponID);
-
             if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
 
                 String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
@@ -215,7 +209,6 @@ public class CouponRepository implements ICouponRepository {
                 }
                 System.out.println (updateCount);
             }
-
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
