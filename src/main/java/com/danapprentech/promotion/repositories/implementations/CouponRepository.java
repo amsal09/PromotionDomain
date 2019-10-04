@@ -194,20 +194,25 @@ public class CouponRepository implements ICouponRepository {
         logger.info ("Entity manager {}",em);
         String couponID = (String) jsonObject.get ("couponId");
         String paymentCode = (String) jsonObject.get ("paymentMethodCode");
-        CouponIssue responCouponIssue = null;
+        CouponIssue responseCoupon = null;
         try {
+            String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
+                    +"and coupon_status = 'available'";
+
             CouponIssue couponIssue = getCouponDetailsById (couponID);
-            if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
+            if(!couponIssue.getPaymentMethod ().equalsIgnoreCase ("000")){
+                if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
 
-                String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
-                        +"and coupon_status = 'available'";
-
+                    updateCount = em.createNativeQuery (sql)
+                            .executeUpdate ();
+                    responseCoupon = getCouponDetailsById (couponID);
+                    System.out.println (updateCount);
+                }
+            }else{
                 updateCount = em.createNativeQuery (sql)
                         .executeUpdate ();
-                if(updateCount==1){
-                    responCouponIssue = getCouponDetailsById (couponID);
-                }
                 System.out.println (updateCount);
+                responseCoupon = getCouponDetailsById (couponID);
             }
             em.getTransaction ().commit ();
         }catch (Exception e){
@@ -215,7 +220,7 @@ public class CouponRepository implements ICouponRepository {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-        return responCouponIssue;
+        return responseCoupon;
     }
 
     @Override
