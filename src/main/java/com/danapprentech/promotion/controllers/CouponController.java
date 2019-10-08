@@ -94,8 +94,9 @@ public class CouponController {
                         .build ();
             }else {
                 logger.info ("Get coupon recommendation failed with member id: {}", jsonObject.get ("memberId"));
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.OK.value ())
+
+                baseResponse = new BaseResponse.BaseResponseBuilder ()
+                        .withCode (HttpStatus.NOT_FOUND.value ())
                         .withMessage ("No coupon available for this member")
                         .withData (couponList)
                         .build ();

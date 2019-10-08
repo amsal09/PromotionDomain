@@ -4,6 +4,7 @@ import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
 import com.danapprentech.promotion.response.CouponIssue;
+import com.danapprentech.promotion.rollback.CouponRollback;
 import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
 import org.json.simple.JSONObject;
@@ -33,6 +34,8 @@ public class CouponRepository implements ICouponRepository {
     private IMasterCouponService iMasterCouponService;
     @Autowired
     private ICouponHistoryService iCouponHistoryService;
+    @Autowired
+    private CouponRollback couponRollback;
 
 
     @Override
@@ -217,6 +220,10 @@ public class CouponRepository implements ICouponRepository {
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            if(couponRollback.rollbackCouponStatus (jsonObject)){
+                responseCoupon = getCouponDetailsById (couponID);
+            }
+
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();

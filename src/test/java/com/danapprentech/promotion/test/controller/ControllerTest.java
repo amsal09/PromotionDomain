@@ -3,7 +3,6 @@ package com.danapprentech.promotion.test.controller;
 import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -84,6 +83,18 @@ public class ControllerTest extends AbstractTest{
         assertTrue(response.getMessage ().equalsIgnoreCase ("Coupon not found for this id :: 01"));
     }
 
+    @Test
+    public void getCouponDetailTest_Error() throws Exception {
+        String uri = "/promotion/detail/";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
 
     @Test
     public void getCouponRecommendationTest_Success() throws Exception {
@@ -130,6 +141,18 @@ public class ControllerTest extends AbstractTest{
     }
 
     @Test
+    public void getCouponRecommendationTest_Error() throws Exception {
+        String uri = "/promotion/recommended";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(500, status);
+    }
+
+    @Test
     public void createNewCouponTest_Success() throws Exception {
         String uri = "/promotion/create/coupon";
         JSONObject jsonObject = new JSONObject ();
@@ -170,6 +193,18 @@ public class ControllerTest extends AbstractTest{
     }
 
     @Test
+    public void createNewCouponTest_Error() throws Exception {
+        String uri = "/promotion/create/coupon";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(500, status);
+    }
+
+    @Test
     public void updateCouponStatusTest_Success() throws Exception {
         String uri = "/promotion/update/coupon";
         JSONObject jsonObject = new JSONObject ();
@@ -203,6 +238,17 @@ public class ControllerTest extends AbstractTest{
         String content = mvcResult.getResponse().getContentAsString();
         BaseResponse response = super.mapFromJson(content, BaseResponse.class);
         assertEquals(null,response.getMessage ());
+    }
+
+    @Test
+    public void updateCouponStatusTest_Error() throws Exception {
+        String uri = "/promotion/update/coupon";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(500, status);
     }
 
     @Test
@@ -242,5 +288,18 @@ public class ControllerTest extends AbstractTest{
         BaseResponse response = super.mapFromJson(content, BaseResponse.class);
         assertTrue(response.getMessage ().equalsIgnoreCase ("Failed to save data"));
     }
+
+    @Test
+    public void createCouponforNewMember_Error() throws Exception {
+        String uri = "/promotion/create/coupon/first";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(500, status);
+    }
+
 
 }

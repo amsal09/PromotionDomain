@@ -30,12 +30,21 @@ public class RepositoryTest {
     }
 
     @Test
-    public void getAllCouponRecommended(){
+    public void getAllCouponRecommendedTest_Success(){
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","USR-02");
         jsonObject.put ("amount",25000);
         List<CouponIssue> couponIssueList = iCouponRepository.getCouponRecommendation (jsonObject);
         assertFalse (couponIssueList.isEmpty ());
+    }
+
+    @Test
+    public void getAllCouponRecommendedTest_Failed(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","USR-00");
+        jsonObject.put ("amount",25000);
+        List<CouponIssue> couponIssueList = iCouponRepository.getCouponRecommendation (jsonObject);
+        assertTrue (couponIssueList.isEmpty ());
     }
 
     @Test
