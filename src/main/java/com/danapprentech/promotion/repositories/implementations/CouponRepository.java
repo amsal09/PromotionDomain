@@ -4,14 +4,16 @@ import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
 import com.danapprentech.promotion.response.CouponIssue;
-import com.danapprentech.promotion.rollback.CouponRollback;
 import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
+import com.danapprentech.promotion.services.interfaces.IRedeemHistoryService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
@@ -23,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Transactional
+@EnableTransactionManagement
 @Repository
 public class CouponRepository implements ICouponRepository {
     private static final Logger logger = LoggerFactory.getLogger(CouponRepository.class);
@@ -35,10 +37,11 @@ public class CouponRepository implements ICouponRepository {
     @Autowired
     private ICouponHistoryService iCouponHistoryService;
     @Autowired
-    private CouponRollback couponRollback;
+    private IRedeemHistoryService iRedeemHistoryService;
 
 
     @Override
+    @Transactional
     public CouponIssue getCouponDetailsById(String couponID) {
         Coupon coupon = null;
         CouponIssue couponIssue =null;
@@ -66,7 +69,9 @@ public class CouponRepository implements ICouponRepository {
 
             logger.info ("{}",em);
             em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
         }catch (Exception e){
+            logger.info ("Rollback transaction");
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
@@ -75,6 +80,7 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
+    @Transactional
     public List<Coupon> getAllCoupons() {
         List<Coupon> couponList = null;
         EntityManager em = getEntityManager ();
@@ -86,8 +92,10 @@ public class CouponRepository implements ICouponRepository {
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)
                     .getResultList ();
             em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.info ("Rollback transaction");
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
@@ -95,6 +103,7 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
+    @Transactional
     public List<CouponIssue> getCouponRecommendation(JSONObject jsonObject) {
         List<Coupon> couponList= null;
         ArrayList<Mcoupon> mcouponList = new ArrayList<Mcoupon> ();
@@ -119,7 +128,6 @@ public class CouponRepository implements ICouponRepository {
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)
                     .getResultList ();
 
-            em.getTransaction ().commit ();
 
             for (Coupon coupon: couponList) {
                 mcouponList.add (iMasterCouponService.getAllById (coupon.getmCouponId (), value));
@@ -137,7 +145,11 @@ public class CouponRepository implements ICouponRepository {
 
                 couponIssueList.add (couponIssue);
             }
+
+            em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
         }catch (Exception e){
+            logger.info ("Rollback transaction");
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
@@ -147,6 +159,7 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
+    @Transactional
     public Integer saveOrUpdate(JSONObject jsonObject) {
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
@@ -181,7 +194,9 @@ public class CouponRepository implements ICouponRepository {
                 }
             }
             em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
         }catch (Exception e){
+            logger.info ("Rollback transaction");
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
@@ -190,47 +205,50 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
+    @Transactional
     public CouponIssue updateStatus(JSONObject jsonObject) {
         int updateCount=0;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
         logger.info ("Entity manager {}",em);
         String couponID = (String) jsonObject.get ("couponId");
-        String paymentCode = (String) jsonObject.get ("paymentMethodCode");
-        CouponIssue responseCoupon = null;
+
         try {
+            String paymentCode = (String) jsonObject.get ("paymentMethodCode");
+            String paymentId = (String) jsonObject.get ("paymentId");
+
             String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
                     +"and coupon_status = 'available'";
 
-            CouponIssue couponIssue = getCouponDetailsById (couponID);
-            if(!couponIssue.getPaymentMethod ().equalsIgnoreCase ("000")){
-                if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
+            if(iRedeemHistoryService.getRedeemHistoryByPaymentId (paymentId) == null){
+                CouponIssue couponIssue = getCouponDetailsById (couponID);
+                if(!couponIssue.getPaymentMethod ().equalsIgnoreCase ("000")){
+                    if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
 
+                        updateCount = em.createNativeQuery (sql)
+                                .executeUpdate ();
+                        System.out.println (updateCount);
+                    }
+                }else{
                     updateCount = em.createNativeQuery (sql)
                             .executeUpdate ();
-                    responseCoupon = getCouponDetailsById (couponID);
                     System.out.println (updateCount);
                 }
-            }else{
-                updateCount = em.createNativeQuery (sql)
-                        .executeUpdate ();
-                System.out.println (updateCount);
-                responseCoupon = getCouponDetailsById (couponID);
-            }
-            em.getTransaction ().commit ();
-        }catch (Exception e){
-            em.getTransaction ().rollback ();
-            if(couponRollback.rollbackCouponStatus (jsonObject)){
-                responseCoupon = getCouponDetailsById (couponID);
             }
 
+            em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
+        }catch (Exception e){
+            em.getTransaction ().rollback ();
+            logger.info ("Rollback transaction");
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-        return responseCoupon;
+        return getCouponDetailsById (couponID);
     }
 
     @Override
+    @Transactional
     public Integer updateStatusTrue(JSONObject jsonObject) {
         int updateCount = 0;
         EntityManager em = getEntityManager ();
@@ -245,8 +263,10 @@ public class CouponRepository implements ICouponRepository {
                     .executeUpdate ();
 
             em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.info ("Rollback transaction");
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
@@ -254,6 +274,7 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
+    @Transactional
     public Integer firstCoupon(JSONObject jsonObject) {
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
@@ -281,10 +302,11 @@ public class CouponRepository implements ICouponRepository {
                         .setParameter (5,ld.toString ())
                         .executeUpdate ();
             }
-
             em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
         }catch (Exception e){
             em.getTransaction ().rollback ();
+            logger.info ("Rollback transaction");
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
             return saveCount;
         }
@@ -293,6 +315,7 @@ public class CouponRepository implements ICouponRepository {
     }
 
     @Override
+    @Transactional
     public Coupon checkForNewMember(String memberId, String mCouponId) {
         Coupon coupon = null;
         EntityManager em = getEntityManager ();
@@ -308,7 +331,9 @@ public class CouponRepository implements ICouponRepository {
 
             logger.info ("{}",em);
             em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
         }catch (Exception e){
+            logger.info ("Rollback transaction");
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
             return coupon;

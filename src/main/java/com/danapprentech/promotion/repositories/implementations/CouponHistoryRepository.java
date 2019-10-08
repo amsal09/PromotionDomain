@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -15,16 +16,19 @@ import javax.transaction.Transactional;
 import java.util.UUID;
 
 @Repository
+@EnableTransactionManagement
 @Transactional
 public class CouponHistoryRepository implements ICouponHistoryRepository {
     private static final Logger logger = LoggerFactory.getLogger(CouponHistoryRepository.class);
     private EntityManagerFactory emf;
     @Autowired
     public CouponHistoryRepository(EntityManagerFactory emf) {
+
         this.emf = emf;
     }
 
     @Override
+    @Transactional
     public Couponhistory getDataByPaymentId(String paymentId) {
         Couponhistory couponhistory = null;
         EntityManager em = getEntityManager ();

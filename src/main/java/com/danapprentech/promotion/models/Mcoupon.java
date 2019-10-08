@@ -1,11 +1,13 @@
 package com.danapprentech.promotion.models;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
+@ApiModel(description = "Master coupon")
 public class Mcoupon {
     @Id
     @ApiModelProperty(notes = "Id of Coupon Master Table")

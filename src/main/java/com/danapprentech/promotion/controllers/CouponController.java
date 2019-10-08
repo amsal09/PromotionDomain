@@ -218,6 +218,7 @@ public class CouponController {
     @ApiOperation(value = "Create new coupon for new member")
     @PostMapping(value = "/create/coupon/first")
     public BaseResponse createCouponForNewMember(@RequestBody String body) throws ParserExeption {
+        System.out.println (body);
         JSONParser parser = new JSONParser ();
         JSONObject jsonObject;
         String response="failed";

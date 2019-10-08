@@ -23,16 +23,6 @@ public class Consumer {
     private ICouponHistoryService iCouponHistoryService;
     private JSONParser jsonParser = new JSONParser();
 
-//    @RabbitListener(queues = "${promotion.rabbitmq.queue}")
-//    public void receiveMsg(byte[] message) throws Exception {
-//        String response = new String(message);
-//        System.out.println ("Receive: "+response);
-//        Object obj = jsonParser.parse(response);
-//        JSONObject data = (JSONObject) obj;
-//        logger.info ("message body from payment: {} ",response);
-//        couponController.couponRedeem (data);
-//    }
-
     @RabbitListener(queues = "${promotion.rabbitmq.queue}")
     public void receiveMsgCreateCoupon(byte[] message) throws ResourceNotFoundException {
         JSONObject data = null;

@@ -237,7 +237,7 @@ public class ControllerTest extends AbstractTest{
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
         BaseResponse response = super.mapFromJson(content, BaseResponse.class);
-        assertEquals(null,response.getMessage ());
+        assertNull (response.getMessage ());
     }
 
     @Test
@@ -252,7 +252,7 @@ public class ControllerTest extends AbstractTest{
     }
 
     @Test
-    public void createCouponforNewMember_Success() throws Exception {
+    public void createCouponNewMember_Success() throws Exception {
         String uri = "/promotion/create/coupon/first";
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","USR-Test1");
@@ -267,11 +267,11 @@ public class ControllerTest extends AbstractTest{
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
         BaseResponse response = super.mapFromJson(content, BaseResponse.class);
-        assertTrue(response.getMessage ().equalsIgnoreCase ("Success"));
+        assertTrue (response.getMessage ().equalsIgnoreCase ("Success"));
     }
 
     @Test
-    public void createCouponforNewMember_Failed() throws Exception {
+    public void createCouponNewMember_Failed() throws Exception {
         String uri = "/promotion/create/coupon/first";
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","USR-Test");
@@ -290,7 +290,7 @@ public class ControllerTest extends AbstractTest{
     }
 
     @Test
-    public void createCouponforNewMember_Error() throws Exception {
+    public void createCouponNewMember_Error() throws Exception {
         String uri = "/promotion/create/coupon/first";
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)

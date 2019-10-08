@@ -6,14 +6,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
+@EnableTransactionManagement
 public class MasterCouponRepository implements IMasterCouponRepository {
     private static final Logger logger = LoggerFactory.getLogger(MasterCouponRepository.class);
     @Autowired
@@ -24,6 +27,7 @@ public class MasterCouponRepository implements IMasterCouponRepository {
     }
 
     @Override
+    @Transactional
     public Integer saveOrUpdate(Mcoupon mcoupon) {
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
