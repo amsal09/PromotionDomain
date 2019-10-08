@@ -48,6 +48,18 @@ public class RepositoryTest {
     }
 
     @Test
+    public void getAllCouponRecommendedTest_Error(){
+        List<CouponIssue> couponIssueList = null;
+        try {
+            JSONObject jsonObject = new JSONObject ();
+            couponIssueList = iCouponRepository.getCouponRecommendation (jsonObject);
+            assertTrue (couponIssueList.isEmpty ());
+        }catch (Exception e){
+            assertNull (couponIssueList);
+        }
+    }
+
+    @Test
     public void getDetailCouponById(){
         CouponIssue coupon = iCouponRepository.getCouponDetailsById ("TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");
         assertEquals ("USR-01", coupon.getMemberId ());

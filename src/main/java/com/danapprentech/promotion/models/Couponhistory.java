@@ -1,6 +1,7 @@
 package com.danapprentech.promotion.models;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,9 +10,13 @@ import javax.persistence.Id;
 @ApiModel(description = "Update Coupon Status History")
 public class Couponhistory {
     @Id
+    @ApiModelProperty(notes = "Id of coupon history Table")
     private String couponhistoryId;
+    @ApiModelProperty(notes = "Payment Id")
     private String paymentId;
+    @ApiModelProperty(notes = "Coupon Id")
     private String couponId;
+    @ApiModelProperty(notes = "Member Id")
     private String memberId;
 
     public String getCouponhistoryId() {
