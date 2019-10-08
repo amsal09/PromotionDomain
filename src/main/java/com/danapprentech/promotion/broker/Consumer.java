@@ -41,11 +41,15 @@ public class Consumer {
             String status = (String) data.get ("status");
             if(status.equalsIgnoreCase ("success")){
                 logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
-                couponController.createCoupon (data);
+                BaseResponse baseResponse = couponController.createCoupon (data);
+                if(baseResponse.getMessage ().equalsIgnoreCase ("SUCCESS")){
+                    logger.info ("try to publish data to queue");
+                    Producer producer = new Producer ("queue.payment");
+                    producer.sendToExchange (baseResponse.toString (),"");
+                }
             }else{
                 logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
                 BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
-                System.out.println (baseResponse.getData ().toString ());
                     while (baseResponse.getMessage ().equalsIgnoreCase ("failed")){
                         baseResponse = couponController.updateCouponStatusTrue (data);
                     }

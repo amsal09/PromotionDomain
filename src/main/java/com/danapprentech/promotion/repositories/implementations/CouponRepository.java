@@ -212,7 +212,6 @@ public class CouponRepository implements ICouponRepository {
         em.getTransaction ().begin ();
         logger.info ("Entity manager {}",em);
         String couponID = (String) jsonObject.get ("couponId");
-
         try {
             String paymentCode = (String) jsonObject.get ("paymentMethodCode");
             String paymentId = (String) jsonObject.get ("paymentId");

@@ -121,26 +121,37 @@ public class CouponController {
             int rows = iCouponService.saveOrUpdateCoupon (jsonObject);
             if(rows!=0){
                 logger.info ("Created coupon success");
+                JSONObject json = new JSONObject ();
+                json.put ("paymentId",jsonObject.get ("paymentId"));
+                json.put ("field","PROMOTION");
+
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.CREATED.value ())
                         .withMessage ("Success")
-                        .withData ("Generate new coupon successfully, and save data by "+rows+" (rows)")
+                        .withData (json)
                         .build ();
             }else {
                 logger.info ("Created coupon failed");
+                JSONObject json = new JSONObject ();
+                json.put ("paymentId",jsonObject.get ("paymentId"));
+                json.put ("field","PROMOTION");
                 baseResponse= new BaseResponse.BaseResponseBuilder()
                         .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Failed to generate coupon")
-                        .withData ("null")
+                        .withMessage ("Failed")
+                        .withData (json)
                         .build ();
             }
         }catch (Exception e){
             logger.warn ("Error: {} when to create new coupon",e.getMessage ());
             logger.warn ("{}",e.getStackTrace ());
+
+            JSONObject json = new JSONObject ();
+            json.put ("paymentId",jsonObject.get ("paymentId"));
+            json.put ("field","PROMOTION");
             baseResponse= new BaseResponse.BaseResponseBuilder ()
                     .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
-                    .withData ("null")
+                    .withData (json)
                     .build ();
         }
 
