@@ -83,15 +83,15 @@
 2019-10-07 16:36:17,356 DEBUG com.danapprentech.promotion.PromotionApplication [restartedMain] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
 2019-10-07 16:36:17,357 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] The following profiles are active: prod
 2019-10-07 16:36:22,344 INFO com.danapprentech.promotion.PromotionApplication [restartedMain] Started PromotionApplication in 5.288 seconds (JVM running for 7.228)
-2019-10-07 17:01:30,505 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Starting RepositoryTest on Amsal with PID 73902 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
-2019-10-07 17:01:30,507 DEBUG com.danapprentech.promotion.test.repository.RepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
-2019-10-07 17:01:30,507 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] The following profiles are active: prod
-2019-10-07 17:01:35,859 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Started RepositoryTest in 5.878 seconds (JVM running for 7.361)
+2019-10-07 17:01:30,505 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Starting RepositoryTest on Amsal with PID 73902 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-07 17:01:30,507 DEBUG com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-07 17:01:30,507 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] The following profiles are active: prod
+2019-10-07 17:01:35,859 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Started RepositoryTest in 5.878 seconds (JVM running for 7.361)
 2019-10-07 17:01:36,110 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [main] Entity manager SessionImpl(2055269325<open>)
-2019-10-07 17:01:44,084 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Starting RepositoryTest on Amsal with PID 73953 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
-2019-10-07 17:01:44,087 DEBUG com.danapprentech.promotion.test.repository.RepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
-2019-10-07 17:01:44,087 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] The following profiles are active: prod
-2019-10-07 17:01:50,396 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Started RepositoryTest in 6.913 seconds (JVM running for 8.396)
+2019-10-07 17:01:44,084 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Starting RepositoryTest on Amsal with PID 73953 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-07 17:01:44,087 DEBUG com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-07 17:01:44,087 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] The following profiles are active: prod
+2019-10-07 17:01:50,396 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Started RepositoryTest in 6.913 seconds (JVM running for 8.396)
 2019-10-07 17:01:50,708 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [main] Entity manager SessionImpl(1025979136<open>)
 2019-10-07 17:01:50,900 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [main] Entity manager SessionImpl(544283394<open>)
 2019-10-07 17:01:50,934 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [main] Entity manager SessionImpl(1962233742<open>)
@@ -102,16 +102,16 @@
 2019-10-07 17:01:50,967 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [main] Entity manager SessionImpl(1396344128<open>)
 2019-10-07 17:01:50,985 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [main] Entity manager SessionImpl(1916160576<open>)
 2019-10-07 17:01:50,990 INFO com.danapprentech.promotion.repositories.implementations.MasterCouponRepository [main] Entity manager SessionImpl(1574410839<open>)
-2019-10-07 17:02:19,866 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Starting RepositoryTest on Amsal with PID 74081 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
-2019-10-07 17:02:19,868 DEBUG com.danapprentech.promotion.test.repository.RepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
-2019-10-07 17:02:19,868 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] The following profiles are active: prod
-2019-10-07 17:02:25,815 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Started RepositoryTest in 6.596 seconds (JVM running for 7.979)
-2019-10-07 17:02:49,080 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Starting RepositoryTest on Amsal with PID 74188 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
-2019-10-07 17:02:49,083 DEBUG com.danapprentech.promotion.test.repository.RepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
-2019-10-07 17:02:49,083 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] The following profiles are active: prod
-2019-10-07 17:02:54,948 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Started RepositoryTest in 6.424 seconds (JVM running for 7.881)
-2019-10-07 17:04:35,591 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Starting RepositoryTest on Amsal with PID 74540 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
-2019-10-07 17:04:35,593 DEBUG com.danapprentech.promotion.test.repository.RepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
-2019-10-07 17:04:35,593 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] The following profiles are active: prod
-2019-10-07 17:04:41,319 INFO com.danapprentech.promotion.test.repository.RepositoryTest [main] Started RepositoryTest in 6.278 seconds (JVM running for 7.848)
+2019-10-07 17:02:19,866 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Starting RepositoryTest on Amsal with PID 74081 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-07 17:02:19,868 DEBUG com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-07 17:02:19,868 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] The following profiles are active: prod
+2019-10-07 17:02:25,815 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Started RepositoryTest in 6.596 seconds (JVM running for 7.979)
+2019-10-07 17:02:49,080 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Starting RepositoryTest on Amsal with PID 74188 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-07 17:02:49,083 DEBUG com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-07 17:02:49,083 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] The following profiles are active: prod
+2019-10-07 17:02:54,948 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Started RepositoryTest in 6.424 seconds (JVM running for 7.881)
+2019-10-07 17:04:35,591 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Starting RepositoryTest on Amsal with PID 74540 (started by amsaljayadisihombing in /Users/amsaljayadisihombing/Documents/DANA/Dana Pulsa/Program/dtc_promotion)
+2019-10-07 17:04:35,593 DEBUG com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-07 17:04:35,593 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] The following profiles are active: prod
+2019-10-07 17:04:41,319 INFO com.danapprentech.promotion.test.repository.CouponRepositoryTest [main] Started RepositoryTest in 6.278 seconds (JVM running for 7.848)
 2019-10-07 17:04:41,597 INFO com.danapprentech.promotion.repositories.implementations.CouponRepository [main] Entity manager SessionImpl(451809097<open>)

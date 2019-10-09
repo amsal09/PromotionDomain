@@ -87,7 +87,7 @@ public class CouponRepository implements ICouponRepository {
         em.getTransaction ().begin ();
         logger.info ("Entity manager {}",em);
         try {
-            String sql = "from Coupon";
+            String sql = "FROM Coupon";
             couponList = em.createQuery (sql, Coupon.class)
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)
                     .getResultList ();

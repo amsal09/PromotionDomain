@@ -17,7 +17,7 @@ public class Producer {
     }
 
     public void sendToExchange(String message, String key) {
-        template.convertAndSend("data.exchange", key, message);
+        template.convertAndSend("dtc_promotion_exc", key, message);
     }
 
     private  RabbitTemplate createRabbitTemplate() {

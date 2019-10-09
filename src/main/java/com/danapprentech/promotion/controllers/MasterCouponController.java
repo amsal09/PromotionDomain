@@ -32,6 +32,7 @@ public class MasterCouponController {
                     .withMCouponAmount (value1)
                     .withMCouponDesc ((String) jsonObject.get ("m_coupon_description"))
                     .withMCouponMinTransaction (value2)
+                    .withPaymentMethod ((String)jsonObject.get ("paymentMethod"))
                     .build ();
 
             int saveRow= iMasterCouponService.saveOrUpdate (mcoupon);

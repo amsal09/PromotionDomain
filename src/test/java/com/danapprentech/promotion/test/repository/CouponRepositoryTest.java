@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -19,7 +20,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @Transactional
 @SpringBootTest
-public class RepositoryTest {
+public class CouponRepositoryTest {
     @Autowired
     ICouponRepository iCouponRepository;
 
@@ -60,8 +61,47 @@ public class RepositoryTest {
     }
 
     @Test
-    public void getDetailCouponById(){
+    public void getDetailCouponByIdTest_Success(){
         CouponIssue coupon = iCouponRepository.getCouponDetailsById ("TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");
         assertEquals ("USR-01", coupon.getMemberId ());
+    }
+
+    @Test
+    public void getDetailCouponByIdTest_Empty(){
+        CouponIssue coupon = iCouponRepository.getCouponDetailsById ("CouponId");
+        assertNull (coupon);
+
+    }
+
+    @Test
+    public void getDetailCouponByIdTest_Error(){
+        CouponIssue coupon = iCouponRepository.getCouponDetailsById ("");
+        assertNull (coupon);
+
+    }
+
+    @Test
+    public void saveCouponTest_Success(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","mmr-01");
+        jsonObject.put ("amount",40000L);
+        int rows = iCouponRepository.saveOrUpdate (jsonObject);
+        assertEquals (1,rows);
+    }
+
+    @Test
+    public void saveCouponTest_Error(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","mmr-01");
+        int rows = iCouponRepository.saveOrUpdate (jsonObject);
+        assertEquals (0,rows);
+    }
+
+    @Test
+    public void updateCouponStatusTest_Success(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("couponId","");
+        int rows = iCouponRepository.saveOrUpdate (jsonObject);
+        assertEquals (0,rows);
     }
 }

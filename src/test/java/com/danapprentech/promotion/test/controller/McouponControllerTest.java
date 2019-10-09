@@ -2,6 +2,8 @@ package com.danapprentech.promotion.test.controller;
 
 import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.response.BaseResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,15 +27,13 @@ public class McouponControllerTest extends AbstractTest{
     @Test
     public void addDataMasterTest_Success() throws Exception {
         String uri = "/master/add";
-        Mcoupon mcoupon = new Mcoupon.MasterCouponBuilder ()
-                        .withMCouponDesc ("17 Agustus")
-                        .withMCouponAmount (10000L)
-                        .withMCouponMinTransaction (0L)
-                        .withPaymentMethod ("000")
-                        .build ();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put ("m_coupon_description","17 Agustus");
+        jsonObject.put ("m_minimum_transaction",0L);
+        jsonObject.put ("m_coupon_amount",12000);
+        jsonObject.put ("paymentMethod","000");
 
-        String inputJson = super.mapToJson (mcoupon);
-
+        String inputJson = super.mapToJson (jsonObject);
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post (uri)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(inputJson)).andReturn();
@@ -49,9 +49,12 @@ public class McouponControllerTest extends AbstractTest{
     @Test
     public void addDataMasterTest_Failed() throws Exception {
         String uri = "/master/add";
-        Mcoupon mcoupon = new Mcoupon();
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("m_coupon_description","16 Agustus");
+        jsonObject.put ("m_minimum_transaction",0L);
+        jsonObject.put ("m_coupon_amount",12000);
 
-        String inputJson = super.mapToJson (mcoupon);
+        String inputJson = super.mapToJson (jsonObject);
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post (uri)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
