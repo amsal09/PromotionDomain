@@ -100,8 +100,12 @@ public class CouponRepositoryTest {
     @Test
     public void updateCouponStatusTest_Success(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","");
-        int rows = iCouponRepository.saveOrUpdate (jsonObject);
-        assertEquals (0,rows);
+        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        jsonObject.put ("memberId","USR-994facc9-2e40-47c2-840e-77680a90e033");
+        jsonObject.put ("paymentMethodCode","000");
+        jsonObject.put ("paymentId","cf7ec9ed-0614-49c2-bec9-ed0614b9c275");
+        CouponIssue couponIssue = iCouponRepository.updateStatus (jsonObject);
+        assertNotNull (couponIssue);
+        assertEquals ("not available",couponIssue.getCouponStatus ());
     }
 }

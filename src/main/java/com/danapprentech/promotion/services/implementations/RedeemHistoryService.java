@@ -3,6 +3,7 @@ package com.danapprentech.promotion.services.implementations;
 import com.danapprentech.promotion.models.Redeemhistory;
 import com.danapprentech.promotion.repositories.interfaces.IRedeemHistoryRepository;
 import com.danapprentech.promotion.services.interfaces.IRedeemHistoryService;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +15,10 @@ public class RedeemHistoryService implements IRedeemHistoryService {
     @Override
     public Redeemhistory getRedeemHistoryByPaymentId(String paymentId) {
         return iRedeemHistoryRepository.getRedeemHistoryByPaymentId (paymentId);
+    }
+
+    @Override
+    public Integer saveRedeemCouponHistory(JSONObject jsonObject) {
+        return iRedeemHistoryRepository.saveRedeemCouponHistory (jsonObject);
     }
 }

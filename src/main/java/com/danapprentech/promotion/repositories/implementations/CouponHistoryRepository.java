@@ -54,7 +54,7 @@ public class CouponHistoryRepository implements ICouponHistoryRepository {
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
         int saveCount = 0;
-        String uniqueId = "MCPN-";
+        String uniqueId = "HCPN-";
         uniqueId += UUID.randomUUID().toString();
         logger.info ("Entity manager {}",em);
         String response ="Failed";

@@ -226,11 +226,21 @@ public class CouponRepository implements ICouponRepository {
 
                         updateCount = em.createNativeQuery (sql)
                                 .executeUpdate ();
+                        int responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                        System.out.println (responsevalue);
+                        while (responsevalue !=1){
+                            responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                        }
                         System.out.println (updateCount);
                     }
                 }else{
                     updateCount = em.createNativeQuery (sql)
                             .executeUpdate ();
+                    int responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                    System.out.println (responsevalue);
+                    while (responsevalue !=1){
+                        responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                    }
                     System.out.println (updateCount);
                 }
             }
