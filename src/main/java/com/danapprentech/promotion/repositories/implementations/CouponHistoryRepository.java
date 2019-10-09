@@ -66,8 +66,7 @@ public class CouponHistoryRepository implements ICouponHistoryRepository {
 
             String sql = "INSERT into Couponhistory (couponhistory_id,payment_id," +
                     "coupon_id, member_id)" +
-                    "values(?,?,?,?) where not exit" +
-                    "(from Couponhistory where payment_id='"+paymentId+"')";
+                    "values(?,?,?,?)";
 
             saveCount = em.createNativeQuery (sql)
                     .setParameter (1,uniqueId)

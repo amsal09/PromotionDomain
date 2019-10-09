@@ -24,7 +24,7 @@ public class Consumer {
     private JSONParser jsonParser = new JSONParser();
 
     @RabbitListener(queues = "${promotion.rabbitmq.queue}")
-    public void receiveMsgCreateCoupon(byte[] message) throws ResourceNotFoundException {
+    public void receiveMsgCreateCoupon(byte[] message) {
         JSONObject data = null;
         try {
             String response = new String(message);
@@ -42,17 +42,14 @@ public class Consumer {
             if(status.equalsIgnoreCase ("success")){
                 logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
                 BaseResponse baseResponse = couponController.createCoupon (data);
-                if(baseResponse.getMessage ().equalsIgnoreCase ("SUCCESS")){
+                if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data to queue");
                     Producer producer = new Producer ("queue.payment");
-                    producer.sendToExchange (baseResponse.toString (),"dtc_to_payment");
+                    producer.sendToExchange (baseResponse.toString ());
                 }
             }else{
                 logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
                 BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
-                    while (baseResponse.getMessage ().equalsIgnoreCase ("failed")){
-                        baseResponse = couponController.updateCouponStatusTrue (data);
-                    }
             }
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }

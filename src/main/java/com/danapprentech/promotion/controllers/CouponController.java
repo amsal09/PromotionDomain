@@ -119,6 +119,8 @@ public class CouponController {
         BaseResponse baseResponse = null;
         try {
             int rows = iCouponService.saveOrUpdateCoupon (jsonObject);
+            System.out.println (rows);
+            System.out.println ("create coupon success");
             if(rows!=0){
                 logger.info ("Created coupon success");
                 JSONObject json = new JSONObject ();

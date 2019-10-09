@@ -16,8 +16,8 @@ public class Producer {
         this.queue = queue;
     }
 
-    public void sendToExchange(String message, String key) {
-        template.convertAndSend("dtc_promotion_exc", key, message);
+    public void sendToExchange(String message) {
+        template.convertAndSend(queue, message);
     }
 
     private  RabbitTemplate createRabbitTemplate() {
