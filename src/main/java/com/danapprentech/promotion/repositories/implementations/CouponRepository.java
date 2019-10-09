@@ -206,7 +206,7 @@ public class CouponRepository implements ICouponRepository {
 
     @Override
     @Transactional
-    public CouponIssue updateStatus(JSONObject jsonObject) {
+    public Integer updateStatus(JSONObject jsonObject) {
         int updateCount=0;
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
@@ -226,20 +226,25 @@ public class CouponRepository implements ICouponRepository {
 
                         updateCount = em.createNativeQuery (sql)
                                 .executeUpdate ();
-                        int responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
-                        System.out.println (responsevalue);
-                        while (responsevalue !=1){
-                            responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+
+                        if(updateCount==1){
+                            int responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                            System.out.println (responsevalue);
+                            while (responsevalue !=1){
+                                responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                            }
                         }
                         System.out.println (updateCount);
                     }
                 }else{
                     updateCount = em.createNativeQuery (sql)
                             .executeUpdate ();
-                    int responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
-                    System.out.println (responsevalue);
-                    while (responsevalue !=1){
-                        responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                    if(updateCount==1){
+                        int responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                        System.out.println (responsevalue);
+                        while (responsevalue !=1){
+                            responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
+                        }
                     }
                     System.out.println (updateCount);
                 }
@@ -253,7 +258,7 @@ public class CouponRepository implements ICouponRepository {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-        return getCouponDetailsById (couponID);
+        return updateCount;
     }
 
     @Override

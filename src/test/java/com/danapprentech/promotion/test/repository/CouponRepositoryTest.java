@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -104,8 +103,59 @@ public class CouponRepositoryTest {
         jsonObject.put ("memberId","USR-994facc9-2e40-47c2-840e-77680a90e033");
         jsonObject.put ("paymentMethodCode","000");
         jsonObject.put ("paymentId","cf7ec9ed-0614-49c2-bec9-ed0614b9c275");
-        CouponIssue couponIssue = iCouponRepository.updateStatus (jsonObject);
-        assertNotNull (couponIssue);
-        assertEquals ("not available",couponIssue.getCouponStatus ());
+        int rows = iCouponRepository.updateStatus (jsonObject);
+        assertEquals (1,rows);
+    }
+
+    @Test
+    public void updateCouponStatusTest_Error(){
+        JSONObject jsonObject = new JSONObject ();
+        int rows = iCouponRepository.updateStatus (jsonObject);
+        assertEquals (0,rows);
+    }
+
+    @Test
+    public void updateCouponStatusTrueTest_Success(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        int rows = iCouponRepository.updateStatusTrue (jsonObject);
+        assertEquals (1,rows);
+    }
+
+    @Test
+    public void updateCouponStatusTrueTest_Failed(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        int rows = iCouponRepository.updateStatusTrue (jsonObject);
+        assertEquals (0,rows);
+    }
+
+    @Test
+    public void addCouponNewMemberTest_Success(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","USR-Tes");
+        jsonObject.put ("status","new member");
+        int rows = iCouponRepository.firstCoupon (jsonObject);
+        assertEquals (1,rows);
+    }
+
+    @Test
+    public void addCouponNewMemberTest_Failed(){
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("memberId","USR-Test1");
+        jsonObject.put ("status","new member");
+        int rows = iCouponRepository.firstCoupon (jsonObject);
+        assertEquals (0,rows);
+    }
+
+    @Test
+    public void checkExistTest_Success(){
+        Coupon coupon = iCouponRepository.checkForNewMember("USR11","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
+        assertNull (coupon);
+    }
+    @Test
+    public void checkExistTest_Failed(){
+        Coupon coupon = iCouponRepository.checkForNewMember("USR-Test1","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
+        assertNotNull(coupon);
     }
 }

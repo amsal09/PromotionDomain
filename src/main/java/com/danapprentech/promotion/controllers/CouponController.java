@@ -165,9 +165,10 @@ public class CouponController {
         CouponIssue couponIssue =null;
         try {
             logger.info ("try to update coupon status");
-            couponIssue = iCouponService.updateStatus (jsonObject);
-            if(couponIssue.getCouponStatus ().equals ("not available")){
+            int responsevalue = iCouponService.updateStatus (jsonObject);
+            if(responsevalue==1){
                 logger.info ("update coupon status success");
+                couponIssue = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.OK.value ())
                         .withMessage ("Success")
@@ -175,9 +176,10 @@ public class CouponController {
                         .build ();
             }else {
                 logger.info ("update coupon status failed");
+                couponIssue = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.OK.value ())
-                        .withMessage ("No coupon available for this member")
+                        .withMessage ("Failed")
                         .withData (couponIssue)
                         .build ();
             }
@@ -211,7 +213,7 @@ public class CouponController {
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.OK.value ())
                         .withMessage ("Failed")
-                        .withData ("null")
+                        .withData ("rollback coupon status failed")
                         .build ();
             }
         }catch (Exception e){
