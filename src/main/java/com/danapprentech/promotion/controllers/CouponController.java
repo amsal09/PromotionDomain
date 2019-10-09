@@ -115,33 +115,49 @@ public class CouponController {
 
     @ApiOperation(value = "Create coupon based on amount transaction")
     @PostMapping(value = "/create/coupon")
-    public JSONObject createCoupon(@RequestBody JSONObject jsonObject){
+    public BaseResponse createCoupon(@RequestBody JSONObject jsonObject){
         BaseResponse baseResponse = null;
-        JSONObject json = new JSONObject ();
         try {
             int rows = iCouponService.saveOrUpdateCoupon (jsonObject);
             System.out.println (rows);
             System.out.println ("create coupon success");
             if(rows!=0){
                 logger.info ("Created coupon success");
+                JSONObject json = new JSONObject ();
                 json.put ("paymentId",jsonObject.get ("paymentId"));
-                json.put ("domain","PROMOTION");
+                json.put ("field","PROMOTION");
 
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (HttpStatus.CREATED.value ())
+                        .withMessage ("Success")
+                        .withData (json)
+                        .build ();
             }else {
                 logger.info ("Created coupon failed");
+                JSONObject json = new JSONObject ();
                 json.put ("paymentId",jsonObject.get ("paymentId"));
-                json.put ("domain","PROMOTION");
+                json.put ("field","PROMOTION");
+                baseResponse= new BaseResponse.BaseResponseBuilder()
+                        .withCode (HttpStatus.OK.value ())
+                        .withMessage ("Failed")
+                        .withData (json)
+                        .build ();
             }
         }catch (Exception e){
             logger.warn ("Error: {} when to create new coupon",e.getMessage ());
             logger.warn ("{}",e.getStackTrace ());
 
-
+            JSONObject json = new JSONObject ();
             json.put ("paymentId",jsonObject.get ("paymentId"));
-            json.put ("domain","PROMOTION");
-
+            json.put ("field","PROMOTION");
+            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (HttpStatus.BAD_REQUEST.value ())
+                    .withMessage (e.getMessage ())
+                    .withData (json)
+                    .build ();
         }
-        return json;
+
+        return baseResponse;
     }
 
     @ApiOperation(value = "update coupon status")

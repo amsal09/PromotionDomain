@@ -45,7 +45,10 @@ public class Consumer {
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data to queue");
                     Producer producer = new Producer ("queue.payment");
-                    producer.sendToExchange (baseResponse.toString ());
+                    JSONObject json = new JSONObject ();
+                    json.put ("paymentId",data.get ("paymentId"));
+                    json.put ("domain","promotion");
+                    producer.sendToExchange (json.toString ());
                 }
             }else{
                 logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
