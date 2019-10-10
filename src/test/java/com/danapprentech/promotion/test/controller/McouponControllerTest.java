@@ -2,7 +2,6 @@ package com.danapprentech.promotion.test.controller;
 
 import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.response.BaseResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;

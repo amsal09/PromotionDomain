@@ -62,17 +62,21 @@ public class RedeemHistoryRepository implements IRedeemHistoryRepository {
             String couponId = (String) jsonObject.get ("couponId");
             String memberId = (String) jsonObject.get ("memberId");
 
-            String sql = "INSERT into Redeemhistory (id_redeem,payment_id," +
-                    "coupon_id, member_id)" +
-                    "values(?,?,?,?)";
+            Redeemhistory redeemhistory = getRedeemHistoryByPaymentId (paymentId);
+            if(redeemhistory==null){
+                String sql = "INSERT into Redeemhistory (id_redeem,payment_id," +
+                        "coupon_id, member_id)" +
+                        "values(?,?,?,?)";
 
-            logger.info (sql);
-            saveCount = em.createNativeQuery (sql)
-                    .setParameter (1,uniqueId)
-                    .setParameter (2,paymentId)
-                    .setParameter (3,couponId)
-                    .setParameter (4,memberId)
-                    .executeUpdate ();
+                logger.info (sql);
+                saveCount = em.createNativeQuery (sql)
+                        .setParameter (1,uniqueId)
+                        .setParameter (2,paymentId)
+                        .setParameter (3,couponId)
+                        .setParameter (4,memberId)
+                        .executeUpdate ();
+            }
+
             em.getTransaction ().commit ();
             logger.info ("save redeem history success");
         }catch (Exception e){
