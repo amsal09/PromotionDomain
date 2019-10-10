@@ -1,19 +1,23 @@
 package com.danapprentech.promotion.broker;
 
 import com.danapprentech.promotion.controllers.CouponController;
-import com.danapprentech.promotion.exception.ResourceNotFoundException;
 import com.danapprentech.promotion.models.Couponhistory;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class Consumer {
@@ -24,13 +28,13 @@ public class Consumer {
     private JSONParser jsonParser = new JSONParser();
 
     @RabbitListener(queues = "${promotion.rabbitmq.queue}")
-    public void receiveMsgCreateCoupon(byte[] message) {
-        JSONObject data = null;
+    @RabbitHandler
+    public void receiveMsgCreateCoupon(String message) {
+        Map data =null;
         try {
-            String response = new String(message);
-            logger.info ("message body from payment: {} ",response);
-            Object obj = jsonParser.parse(response);
-            data = (JSONObject) obj;
+            data = new ObjectMapper ().readValue(message, HashMap.class);
+            logger.info ("message body from payment: {} ",data);
+
             String paymentId = (String) data.get ("paymentId");
             logger.info ("Try to get coupon history with payment id: {}",paymentId);
 
@@ -39,9 +43,9 @@ public class Consumer {
         }catch (Exception e){
             assert data != null;
             String status = (String) data.get ("status");
-            if(status.equalsIgnoreCase ("success")){
+            if(status.equalsIgnoreCase ("ON_PROGRESS")){
                 logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
-                BaseResponse baseResponse = couponController.createCoupon (data);
+                BaseResponse baseResponse = couponController.createCoupon ((JSONObject) data);
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data to queue");
                     Producer producer = new Producer ("queue.payment");
@@ -52,7 +56,7 @@ public class Consumer {
                 }
             }else{
                 logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
-                BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
+                BaseResponse baseResponse = couponController.updateCouponStatusTrue ((JSONObject) data);
             }
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
