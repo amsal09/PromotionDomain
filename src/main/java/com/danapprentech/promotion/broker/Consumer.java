@@ -30,9 +30,10 @@ public class Consumer {
     @RabbitListener(queues = "${promotion.rabbitmq.queue}")
     @RabbitHandler
     public void receiveMsgCreateCoupon(String message) {
-        Map data =null;
+        JSONParser parser = new JSONParser();
+        JSONObject data = null;
         try {
-            data = new ObjectMapper ().readValue(message, HashMap.class);
+            data = (JSONObject) parser.parse(message);
             logger.info ("message body from payment: {} ",data);
 
             String paymentId = (String) data.get ("paymentId");
