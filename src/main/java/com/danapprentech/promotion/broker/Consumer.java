@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @Component
 public class Consumer {
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
@@ -42,7 +41,11 @@ public class Consumer {
             logger.info ("Try to get coupon history with payment id: {}",paymentId);
 
             Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
-
+            if(couponhistory != null){
+                logger.info ("try to publish data to queue success");
+                json.put ("status","succeed");
+                producer.sendToExchange (json.toString ());
+            }
         }catch (Exception e){
             assert data != null;
             String status = (String) data.get ("status");
