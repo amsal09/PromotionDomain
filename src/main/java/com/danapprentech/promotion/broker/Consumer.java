@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class Consumer {
@@ -32,6 +30,10 @@ public class Consumer {
     public void receiveMsgCreateCoupon(String message) {
         JSONParser parser = new JSONParser();
         JSONObject data = null;
+        Producer producer = new Producer ("queue.payment");
+        JSONObject json = new JSONObject ();
+        json.put ("paymentId",data.get ("paymentId"));
+        json.put ("domain","promotion");
         try {
             data = (JSONObject) parser.parse(message);
             logger.info ("message body from payment: {} ",data);
@@ -49,15 +51,12 @@ public class Consumer {
                 BaseResponse baseResponse = couponController.createCoupon ((JSONObject) data);
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data to queue");
-                    Producer producer = new Producer ("queue.payment");
-                    JSONObject json = new JSONObject ();
-                    json.put ("paymentId",data.get ("paymentId"));
-                    json.put ("domain","promotion");
                     producer.sendToExchange (json.toString ());
                 }
             }else{
                 logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
                 BaseResponse baseResponse = couponController.updateCouponStatusTrue ((JSONObject) data);
+                producer.sendToExchange (json.toString ());
             }
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
