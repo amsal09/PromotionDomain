@@ -30,6 +30,7 @@ public class CouponService implements ICouponService {
         return iCouponRepository.getAllCoupons ();
     }
 
+
     @Override
     public List<CouponIssue> getCouponRecommendation(JSONObject jsonObject) {
         return iCouponRepository.getCouponRecommendation (jsonObject);
@@ -61,4 +62,6 @@ public class CouponService implements ICouponService {
     public Coupon checkForNewMember(String memberId, String mCouponId) {
         return iCouponRepository.checkForNewMember (memberId,mCouponId);
     }
+
+
 }

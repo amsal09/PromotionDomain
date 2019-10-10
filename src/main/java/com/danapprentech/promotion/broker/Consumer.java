@@ -4,7 +4,6 @@ import com.danapprentech.promotion.controllers.CouponController;
 import com.danapprentech.promotion.models.Couponhistory;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -31,6 +30,7 @@ public class Consumer {
         JSONParser parser = new JSONParser();
         JSONObject data = null;
         Producer producer = new Producer ("queue.payment");
+        Producer rollback = new Producer ("queue.payment.rollback");
         JSONObject json = new JSONObject ();
         json.put ("paymentId",data.get ("paymentId"));
         json.put ("domain","promotion");
@@ -50,18 +50,27 @@ public class Consumer {
                 logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
                 BaseResponse baseResponse = couponController.createCoupon ((JSONObject) data);
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
-                    logger.info ("try to publish data to queue");
+                    logger.info ("try to publish data to queue success");
+                    json.put ("status","succeed");
+                    producer.sendToExchange (json.toString ());
+                }else{
+                    logger.info ("try to publish data to queue failed");
+                    json.put ("status","failed");
                     producer.sendToExchange (json.toString ());
                 }
             }else{
                 logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
                 BaseResponse baseResponse = couponController.updateCouponStatusTrue ((JSONObject) data);
-                producer.sendToExchange (json.toString ());
+                if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
+                    logger.info ("try to publish data rollback to queue success");
+                    json.put ("status","succeed");
+                    rollback.sendToExchange (json.toString ());
+                }else {
+                    logger.info ("try to publish data rollback to queue failed");
+                    json.put ("status","failed");
+                    rollback.sendToExchange (json.toString ());
+                }
             }
-            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
-
-
     }
-
 }

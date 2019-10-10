@@ -11,6 +11,8 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -18,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ public class CouponRepository implements ICouponRepository {
     private IRedeemHistoryService iRedeemHistoryService;
 
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public CouponIssue getCouponDetailsById(String couponID) {
@@ -79,6 +83,7 @@ public class CouponRepository implements ICouponRepository {
         return couponIssue;
     }
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public List<Coupon> getAllCoupons() {
@@ -102,6 +107,7 @@ public class CouponRepository implements ICouponRepository {
         return couponList;
     }
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public List<CouponIssue> getCouponRecommendation(JSONObject jsonObject) {
@@ -158,6 +164,7 @@ public class CouponRepository implements ICouponRepository {
         return couponIssueList;
     }
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public Integer saveOrUpdate(JSONObject jsonObject) {
@@ -204,6 +211,7 @@ public class CouponRepository implements ICouponRepository {
         return saveCount;
     }
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public Integer updateStatus(JSONObject jsonObject) {
@@ -261,6 +269,7 @@ public class CouponRepository implements ICouponRepository {
         return updateCount;
     }
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public Integer updateStatusTrue(JSONObject jsonObject) {
@@ -287,6 +296,7 @@ public class CouponRepository implements ICouponRepository {
         return updateCount;
     }
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public Integer firstCoupon(JSONObject jsonObject) {
@@ -328,6 +338,7 @@ public class CouponRepository implements ICouponRepository {
         return saveCount;
     }
 
+    @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
     public Coupon checkForNewMember(String memberId, String mCouponId) {
@@ -354,6 +365,12 @@ public class CouponRepository implements ICouponRepository {
         }
         em.close ();
         return coupon;
+    }
+
+    @Recover
+    public String recover(SQLException t){
+        logger.info("Service recovering");
+        return "Service recovered from billing service failure.";
     }
 
     private EntityManager getEntityManager(){
