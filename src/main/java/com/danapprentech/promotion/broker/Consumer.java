@@ -48,7 +48,7 @@ public class Consumer {
             String status = (String) data.get ("status");
             if(status.equalsIgnoreCase ("ON_PROGRESS")){
                 logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
-                BaseResponse baseResponse = couponController.createCoupon ((JSONObject) data);
+                BaseResponse baseResponse = couponController.createCoupon (data);
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data to queue success");
                     json.put ("status","succeed");
@@ -60,7 +60,7 @@ public class Consumer {
                 }
             }else{
                 logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
-                BaseResponse baseResponse = couponController.updateCouponStatusTrue ((JSONObject) data);
+                BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data rollback to queue success");
                     json.put ("status","succeed");
