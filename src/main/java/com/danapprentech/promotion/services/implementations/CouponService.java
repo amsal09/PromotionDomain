@@ -63,5 +63,10 @@ public class CouponService implements ICouponService {
         return iCouponRepository.checkForNewMember (memberId,mCouponId);
     }
 
+    @Override
+    public Integer deleteById(String couponId) {
+        return iCouponRepository.deleteById (couponId);
+    }
+
 
 }

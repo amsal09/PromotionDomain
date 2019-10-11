@@ -15,4 +15,5 @@ public interface ICouponService {
     Integer updateStatusTrue(JSONObject jsonObject);
     Integer firstCoupon(JSONObject jsonObject);
     Coupon checkForNewMember(String memberId, String mCouponId);
+    Integer deleteById(String couponId);
 }

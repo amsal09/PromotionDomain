@@ -367,6 +367,32 @@ public class CouponRepository implements ICouponRepository {
         return coupon;
     }
 
+    @Override
+    public Integer deleteById(String couponId) {
+        EntityManager em = getEntityManager ();
+        em.getTransaction ().begin ();
+        int saveCount = 0;
+        String uniqueId = "TCPN-";
+        logger.info ("Entity manager {}",em);
+        try {
+            String sql = "DELETE FROM Coupon WHERE coupon_id='"+couponId+"'";
+
+            saveCount = em.createNativeQuery (sql)
+                    .executeUpdate ();
+
+            System.out.println (sql);
+            em.getTransaction ().commit ();
+            logger.info ("Commit transaction");
+        }catch (Exception e){
+            em.getTransaction ().rollback ();
+            logger.info ("Rollback transaction");
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+            return saveCount;
+        }
+        em.close ();
+        return saveCount;
+    }
+
     @Recover
     public String recover(SQLException t){
         logger.info("Service recovering");
