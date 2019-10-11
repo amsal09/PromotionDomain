@@ -21,15 +21,21 @@ public class CouponHistoryRepositoryTest {
 
     @Test
     public void getDataByPaymentIdTest_Success(){
-        String paymentId="7f8263c2-48f6-4c16-8263-c248f66c1625";
+        String paymentId="28398399-9cd6-4d5d-b983-999cd67d5db2";
         Couponhistory couponhistory =  iCouponHistoryRepository.getDataByPaymentId (paymentId);
+        if(couponhistory!=null){
+            System.out.println ("AAA");
+        }
         assertNotNull (couponhistory);
     }
 
     @Test
     public void getDataByPaymentIdTest_Empty(){
-        String paymentId="cf7ec9ed-0614-49c2-bec9-ed0614b9c274";
+        String paymentId="28398399-9cd6-4d5d-b983-999cd67d5db3";
         Couponhistory couponhistory =  iCouponHistoryRepository.getDataByPaymentId (paymentId);
+        if(couponhistory==null){
+            System.out.println ("BBB");
+        }
         assertNull (couponhistory);
     }
 

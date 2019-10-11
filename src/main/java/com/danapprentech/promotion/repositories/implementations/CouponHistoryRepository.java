@@ -58,6 +58,7 @@ public class CouponHistoryRepository implements ICouponHistoryRepository {
         uniqueId += UUID.randomUUID().toString();
         logger.info ("Entity manager {}",em);
         String response ="Failed";
+        Couponhistory couponhistory = null;
 
         try {
             String paymentId = (String) jsonObject.get ("paymentId");
@@ -65,7 +66,7 @@ public class CouponHistoryRepository implements ICouponHistoryRepository {
             String memberId = (String) jsonObject.get ("memberId");
 
             logger.info ("get data by payment Id");
-            Couponhistory couponhistory = getDataByPaymentId (paymentId);
+            couponhistory = getDataByPaymentId (paymentId);
             if(couponhistory == null){
                 logger.info ("save data to history payment");
                 String sql = "INSERT into Couponhistory (couponhistory_id,payment_id,coupon_id, member_id)" +
@@ -77,15 +78,16 @@ public class CouponHistoryRepository implements ICouponHistoryRepository {
                         .setParameter (3,couponId)
                         .setParameter (4,memberId)
                         .executeUpdate ();
+
+                if(saveCount != 0){
+                    response = "Success";
+                    logger.info ("save data to history payment success");
+                }else {
+                    response = "Failed";
+                    logger.info ("save data to history payment failed");
+                }
             }
 
-            if(saveCount != 0){
-                response = "Success";
-                logger.info ("save data to history payment success");
-            }else {
-                response = "Failed";
-                logger.info ("save data to history payment failed");
-            }
             em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();

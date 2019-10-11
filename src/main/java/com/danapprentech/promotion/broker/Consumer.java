@@ -20,27 +20,25 @@ public class Consumer {
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
     @Autowired
     private CouponController couponController;
+    @Autowired
     private ICouponHistoryService iCouponHistoryService;
     private JSONParser jsonParser = new JSONParser();
 
     @RabbitListener(queues = "queue.payment.promotion")
     @RabbitHandler
     public void receiveMsgCreateCoupon(String message) {
-        System.out.println ("Try to save new coupon for new transaction");
         JSONParser parser = new JSONParser();
-        Couponhistory couponhistory = null;
-        JSONObject data = null;
         Producer producer = new Producer ("queue.payment");
         Producer rollback = new Producer ("queue.payment.rollback");
         JSONObject json = new JSONObject ();
         try {
-            data = (JSONObject) parser.parse(message);
+            JSONObject data = (JSONObject) parser.parse(message);
             logger.info ("message body from payment: {} ",data);
 
             String paymentId = (String) data.get ("paymentId");
             logger.info ("Try to get coupon history with payment id: {}",paymentId);
-            couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
-            System.out.println (couponhistory.getPaymentId ());
+            Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+
             if(couponhistory != null){
                 System.out.println ("Exist");
                 logger.info ("try to publish data to queue success");
@@ -48,43 +46,44 @@ public class Consumer {
                 json.put ("domain","promotion");
                 json.put ("status","succeed");
                 producer.sendToExchange (json.toString ());
+            }else{
+                String status = (String) data.get ("status");
+                if(status.equalsIgnoreCase ("ON_PROGRESS")){
+                    logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
+                    BaseResponse baseResponse = couponController.createCoupon (data);
+                    if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
+                        logger.info ("try to publish data to queue success");
+                        json.put ("paymentId",data.get ("paymentId"));
+                        json.put ("domain","promotion");
+                        json.put ("status","succeed");
+                        producer.sendToExchange (json.toString ());
+                    }else{
+                        logger.info ("try to publish data to queue failed");
+                        json.put ("paymentId",data.get ("paymentId"));
+                        json.put ("domain","promotion");
+                        json.put ("status","failed");
+                        producer.sendToExchange (json.toString ());
+                    }
+                }else{
+                    logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
+                    BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
+                    if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
+                        logger.info ("try to publish data rollback to queue success");
+                        json.put ("paymentId",data.get ("paymentId"));
+                        json.put ("domain","promotion");
+                        json.put ("status","succeed");
+                        rollback.sendToExchange (json.toString ());
+                    }else {
+                        logger.info ("try to publish data rollback to queue failed");
+                        json.put ("paymentId",data.get ("paymentId"));
+                        json.put ("domain","promotion");
+                        json.put ("status","failed");
+                        rollback.sendToExchange (json.toString ());
+                    }
+                }
             }
         }catch (Exception e){
-            assert data != null;
-            String status = (String) data.get ("status");
-            if(status.equalsIgnoreCase ("ON_PROGRESS")){
-                logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
-                BaseResponse baseResponse = couponController.createCoupon (data);
-                if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
-                    logger.info ("try to publish data to queue success");
-                    json.put ("paymentId",data.get ("paymentId"));
-                    json.put ("domain","promotion");
-                    json.put ("status","succeed");
-                    producer.sendToExchange (json.toString ());
-                }else{
-                    logger.info ("try to publish data to queue failed");
-                    json.put ("paymentId",data.get ("paymentId"));
-                    json.put ("domain","promotion");
-                    json.put ("status","failed");
-                    producer.sendToExchange (json.toString ());
-                }
-            }else{
-                logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
-                BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
-                if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
-                    logger.info ("try to publish data rollback to queue success");
-                    json.put ("paymentId",data.get ("paymentId"));
-                    json.put ("domain","promotion");
-                    json.put ("status","succeed");
-                    rollback.sendToExchange (json.toString ());
-                }else {
-                    logger.info ("try to publish data rollback to queue failed");
-                    json.put ("paymentId",data.get ("paymentId"));
-                    json.put ("domain","promotion");
-                    json.put ("status","failed");
-                    rollback.sendToExchange (json.toString ());
-                }
-            }
+            e.printStackTrace ();
         }
     }
 }

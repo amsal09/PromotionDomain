@@ -197,11 +197,8 @@ public class CouponRepository implements ICouponRepository {
             if(saveCount!=0){
                 System.out.println (jsonObject.get ("paymentId"));
                 String getResponse = iCouponHistoryService.addHistory (jsonObject);
-                while (getResponse.equalsIgnoreCase ("failed")){
-                    getResponse = iCouponHistoryService.addHistory (jsonObject);
-                }
-                System.out.println (sql);
             }
+            System.out.println (sql);
             em.getTransaction ().commit ();
             logger.info ("Commit transaction");
         }catch (Exception e){
