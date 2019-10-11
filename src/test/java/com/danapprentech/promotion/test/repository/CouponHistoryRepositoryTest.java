@@ -21,7 +21,7 @@ public class CouponHistoryRepositoryTest {
 
     @Test
     public void getDataByPaymentIdTest_Success(){
-        String paymentId="cf7ec9ed-0614-49c2-bec9-ed0614b9c275";
+        String paymentId="7f8263c2-48f6-4c16-8263-c248f66c1625";
         Couponhistory couponhistory =  iCouponHistoryRepository.getDataByPaymentId (paymentId);
         assertNotNull (couponhistory);
     }

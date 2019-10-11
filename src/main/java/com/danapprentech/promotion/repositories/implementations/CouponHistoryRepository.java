@@ -64,10 +64,11 @@ public class CouponHistoryRepository implements ICouponHistoryRepository {
             String couponId = (String) jsonObject.get ("couponId");
             String memberId = (String) jsonObject.get ("memberId");
 
+            logger.info ("get data by payment Id");
             Couponhistory couponhistory = getDataByPaymentId (paymentId);
             if(couponhistory == null){
-                String sql = "INSERT into Couponhistory (couponhistory_id,payment_id," +
-                        "coupon_id, member_id)" +
+                logger.info ("save data to history payment");
+                String sql = "INSERT into Couponhistory (couponhistory_id,payment_id,coupon_id, member_id)" +
                         "values(?,?,?,?)";
 
                 saveCount = em.createNativeQuery (sql)
@@ -76,14 +77,16 @@ public class CouponHistoryRepository implements ICouponHistoryRepository {
                         .setParameter (3,couponId)
                         .setParameter (4,memberId)
                         .executeUpdate ();
-                em.getTransaction ().commit ();
             }
 
             if(saveCount != 0){
                 response = "Success";
+                logger.info ("save data to history payment success");
             }else {
                 response = "Failed";
+                logger.info ("save data to history payment failed");
             }
+            em.getTransaction ().commit ();
         }catch (Exception e){
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());

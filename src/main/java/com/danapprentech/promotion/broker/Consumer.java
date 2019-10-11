@@ -23,26 +23,29 @@ public class Consumer {
     private ICouponHistoryService iCouponHistoryService;
     private JSONParser jsonParser = new JSONParser();
 
-    @RabbitListener(queues = "${promotion.rabbitmq.queue}")
+    @RabbitListener(queues = "queue.payment.promotion")
     @RabbitHandler
     public void receiveMsgCreateCoupon(String message) {
+        System.out.println ("Try to save new coupon for new transaction");
         JSONParser parser = new JSONParser();
+        Couponhistory couponhistory = null;
         JSONObject data = null;
         Producer producer = new Producer ("queue.payment");
         Producer rollback = new Producer ("queue.payment.rollback");
         JSONObject json = new JSONObject ();
-        json.put ("paymentId",data.get ("paymentId"));
-        json.put ("domain","promotion");
         try {
             data = (JSONObject) parser.parse(message);
             logger.info ("message body from payment: {} ",data);
 
             String paymentId = (String) data.get ("paymentId");
             logger.info ("Try to get coupon history with payment id: {}",paymentId);
-
-            Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+            couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+            System.out.println (couponhistory.getPaymentId ());
             if(couponhistory != null){
+                System.out.println ("Exist");
                 logger.info ("try to publish data to queue success");
+                json.put ("paymentId",data.get ("paymentId"));
+                json.put ("domain","promotion");
                 json.put ("status","succeed");
                 producer.sendToExchange (json.toString ());
             }
@@ -54,10 +57,14 @@ public class Consumer {
                 BaseResponse baseResponse = couponController.createCoupon (data);
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data to queue success");
+                    json.put ("paymentId",data.get ("paymentId"));
+                    json.put ("domain","promotion");
                     json.put ("status","succeed");
                     producer.sendToExchange (json.toString ());
                 }else{
                     logger.info ("try to publish data to queue failed");
+                    json.put ("paymentId",data.get ("paymentId"));
+                    json.put ("domain","promotion");
                     json.put ("status","failed");
                     producer.sendToExchange (json.toString ());
                 }
@@ -66,10 +73,14 @@ public class Consumer {
                 BaseResponse baseResponse = couponController.updateCouponStatusTrue (data);
                 if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
                     logger.info ("try to publish data rollback to queue success");
+                    json.put ("paymentId",data.get ("paymentId"));
+                    json.put ("domain","promotion");
                     json.put ("status","succeed");
                     rollback.sendToExchange (json.toString ());
                 }else {
                     logger.info ("try to publish data rollback to queue failed");
+                    json.put ("paymentId",data.get ("paymentId"));
+                    json.put ("domain","promotion");
                     json.put ("status","failed");
                     rollback.sendToExchange (json.toString ());
                 }

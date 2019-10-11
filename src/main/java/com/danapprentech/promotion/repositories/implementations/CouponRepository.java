@@ -195,10 +195,12 @@ public class CouponRepository implements ICouponRepository {
                     .executeUpdate ();
 
             if(saveCount!=0){
+                System.out.println (jsonObject.get ("paymentId"));
                 String getResponse = iCouponHistoryService.addHistory (jsonObject);
                 while (getResponse.equalsIgnoreCase ("failed")){
                     getResponse = iCouponHistoryService.addHistory (jsonObject);
                 }
+                System.out.println (sql);
             }
             em.getTransaction ().commit ();
             logger.info ("Commit transaction");
@@ -242,14 +244,12 @@ public class CouponRepository implements ICouponRepository {
                                 responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
                             }
                         }
-                        System.out.println (updateCount);
                     }
                 }else{
                     updateCount = em.createNativeQuery (sql)
                             .executeUpdate ();
                     if(updateCount==1){
                         int responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
-                        System.out.println (responsevalue);
                         while (responsevalue !=1){
                             responsevalue = iRedeemHistoryService.saveRedeemCouponHistory (jsonObject);
                         }
@@ -259,6 +259,7 @@ public class CouponRepository implements ICouponRepository {
             }
 
             em.getTransaction ().commit ();
+            System.out.println (sql);
             logger.info ("Commit transaction");
         }catch (Exception e){
             em.getTransaction ().rollback ();
@@ -287,6 +288,7 @@ public class CouponRepository implements ICouponRepository {
 
             em.getTransaction ().commit ();
             logger.info ("Commit transaction");
+            System.out.println (sql);
         }catch (Exception e){
             em.getTransaction ().rollback ();
             logger.info ("Rollback transaction");
@@ -325,6 +327,7 @@ public class CouponRepository implements ICouponRepository {
                         .setParameter (4,"available")
                         .setParameter (5,ld.toString ())
                         .executeUpdate ();
+                System.out.println (sql);
             }
             em.getTransaction ().commit ();
             logger.info ("Commit transaction");
