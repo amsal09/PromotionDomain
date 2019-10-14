@@ -1,9 +1,6 @@
 package com.danapprentech.promotion.broker;
 
-import com.danapprentech.promotion.controllers.CouponController;
-import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Couponhistory;
-import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
 import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
@@ -26,14 +23,14 @@ public class Consumer {
     @Autowired
     private ICouponService iCouponService;
 
-    private JSONParser jsonParser = new JSONParser();
+    private Producer producer = new Producer ("queue.payment");
+    private Producer rollback = new Producer ("queue.payment.rollback");
+    private JSONObject json = new JSONObject ();
 
     @RabbitListener(queues = "queue.payment.promotion")
     @RabbitHandler
     public void receiveMsgCreateCoupon(String message) {
         JSONParser parser = new JSONParser();
-        Producer producer = new Producer ("queue.payment");
-        JSONObject json = new JSONObject ();
         try {
             JSONObject data = (JSONObject) parser.parse(message);
             logger.info ("message body from payment: {} ",data);
@@ -42,16 +39,13 @@ public class Consumer {
             String status = (String) data.get ("status");
             logger.info ("Try to get coupon history with payment id: {}",paymentId);
             Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
-
             if(couponhistory != null){
                 System.out.println ("Exist");
                 if(status.equalsIgnoreCase ("failed")){
                     rollbackData (data);
                 }else{
                     logger.info ("try to publish data to queue success");
-                    json.put ("paymentId",data.get ("paymentId"));
-                    json.put ("domain","promotion");
-                    json.put ("status","Succeed");
+                    successBuild (data);
                     producer.sendToExchange (json.toString ());
                 }
             }else{
@@ -61,16 +55,12 @@ public class Consumer {
                     if(response.equalsIgnoreCase ("success")){
                         logger.info ("Created coupon success");
                         logger.info ("try to publish data to queue success");
-                        json.put ("paymentId",data.get ("paymentId"));
-                        json.put ("domain","promotion");
-                        json.put ("status","Succeed");
+                        successBuild (data);
                         producer.sendToExchange (json.toString ());
                     }else{
                         logger.info ("Created coupon failed");
                         logger.info ("try to publish data to queue failed");
-                        json.put ("paymentId",data.get ("paymentId"));
-                        json.put ("domain","promotion");
-                        json.put ("status","Failed");
+                        failedBuild (data);
                         producer.sendToExchange (json.toString ());
                     }
                 }else{
@@ -84,10 +74,8 @@ public class Consumer {
             e.printStackTrace ();
         }
     }
-
     public void rollbackData(JSONObject jsonObject){
         try{
-            Producer rollback = new Producer ("queue.payment.rollback");
             JSONObject json = new JSONObject ();
             int responseValue = iCouponService.updateStatusTrue (jsonObject);
             if(responseValue == 1){
@@ -97,22 +85,16 @@ public class Consumer {
                     iCouponService.deleteById (couponhistory.getCouponId ());
                 }
                 logger.info ("try to publish data rollback to queue success");
-                json.put ("paymentId",jsonObject.get ("paymentId"));
-                json.put ("domain","promotion");
-                json.put ("status","Succeed");
+                successBuild (jsonObject);
                 rollback.sendToExchange (json.toString ());
             }else {
                 CouponIssue coupon = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
                 if(coupon==null) {
                     logger.info ("try to publish data rollback to queue failed");
-                    json.put ("paymentId", jsonObject.get ("paymentId"));
-                    json.put ("domain", "promotion");
-                    json.put ("status", "Failed");
+                    failedBuild (jsonObject);
                 }else{
-                    logger.info ("try to publish data rollback to queue failed");
-                    json.put ("paymentId", jsonObject.get ("paymentId"));
-                    json.put ("domain", "promotion");
-                    json.put ("status", "Success");
+                    logger.info ("try to publish data rollback to queue success");
+                    successBuild (jsonObject);
                 }
                 rollback.sendToExchange (json.toString ());
             }
@@ -120,5 +102,16 @@ public class Consumer {
             logger.warn ("Error: "+e.getMessage ());
             logger.warn ("{}"+e.getStackTrace ());
         }
+    }
+
+    public void successBuild(JSONObject jsonObject){
+        json.put ("paymentId", jsonObject.get ("paymentId"));
+        json.put ("domain", "promotion");
+        json.put ("status", "Succeed");
+    }
+    public void failedBuild(JSONObject jsonObject){
+        json.put ("paymentId", jsonObject.get ("paymentId"));
+        json.put ("domain", "promotion");
+        json.put ("status", "Failed");
     }
 }
