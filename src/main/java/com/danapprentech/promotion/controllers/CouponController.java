@@ -67,7 +67,7 @@ public class CouponController {
             }
         }catch (Exception e){
             logger.warn ("Error: {} with coupon id: {}",e.getMessage (), couponId);
-            logger.warn ("{}",e.getStackTrace ());
+            logger.warn ("{}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
                     .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
@@ -103,7 +103,7 @@ public class CouponController {
             }
         }catch (Exception e){
             logger.warn ("Error: {} when to get coupon recommendation",e.getMessage ());
-            logger.warn ("{}",e.getStackTrace ());
+            logger.warn ("{}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
                     .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
@@ -118,9 +118,9 @@ public class CouponController {
     public BaseResponse createCoupon(@RequestBody JSONObject jsonObject){
         BaseResponse baseResponse = null;
         try {
-            int rows = iCouponService.saveOrUpdateCoupon (jsonObject);
-            System.out.println ("create coupon success");
-            if(rows!=0){
+            String response = iCouponService.saveOrUpdateCoupon (jsonObject);
+            if(response.equalsIgnoreCase ("success")){
+                System.out.println ("create coupon success");
                 logger.info ("Created coupon success");
                 JSONObject json = new JSONObject ();
                 json.put ("paymentId",jsonObject.get ("paymentId"));
@@ -144,7 +144,7 @@ public class CouponController {
             }
         }catch (Exception e){
             logger.warn ("Error: {} when to create new coupon",e.getMessage ());
-            logger.warn ("{}",e.getStackTrace ());
+            logger.warn ("{}"+e.getStackTrace ());
 
             JSONObject json = new JSONObject ();
             json.put ("paymentId",jsonObject.get ("paymentId"));
@@ -166,8 +166,8 @@ public class CouponController {
         CouponIssue couponIssue =null;
         try {
             logger.info ("try to update coupon status");
-            int responsevalue = iCouponService.updateStatus (jsonObject);
-            if(responsevalue==1){
+            int response = iCouponService.updateStatus (jsonObject);
+            if(response==1){
                 logger.info ("update coupon status success");
                 couponIssue = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
@@ -186,7 +186,7 @@ public class CouponController {
             }
         }catch (Exception e){
             logger.warn ("Error: {}",e.getMessage ());
-            logger.warn ("Stacktrace: {}",e.getStackTrace ());
+            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
                     .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
@@ -219,7 +219,7 @@ public class CouponController {
             }
         }catch (Exception e){
             logger.warn ("Error: {}",e.getMessage ());
-            logger.warn ("Stacktrace: {}",e.getStackTrace ());
+            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
                     .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
@@ -259,7 +259,7 @@ public class CouponController {
             }
         }catch (Exception e){
             logger.warn ("Error: {}",e.getMessage ());
-            logger.warn ("Stacktrace: {}",e.getStackTrace ());
+            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
             throw new ParserExeption ("Failed to parse string to JSON");
         }
         return baseResponse;

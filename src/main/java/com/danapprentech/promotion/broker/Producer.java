@@ -11,8 +11,6 @@ public class Producer {
     private RabbitTemplate template = createRabbitTemplate();
 
     private DirectExchange exchange = exchange();
-                logger.warn ("Error: "+e.getMessage ());
-            logger.warn ("{}"+e.getStackTrace ());
     public Producer(String queue) {
         this.queue = queue;
     }

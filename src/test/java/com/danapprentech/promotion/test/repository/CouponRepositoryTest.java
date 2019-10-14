@@ -2,7 +2,6 @@ package com.danapprentech.promotion.test.repository;
 
 import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
-import com.danapprentech.promotion.response.CouponIssue;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,47 +33,47 @@ public class CouponRepositoryTest {
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","USR-02");
         jsonObject.put ("amount",25000);
-        List<CouponIssue> couponIssueList = iCouponRepository.getCouponRecommendation (jsonObject);
-        assertFalse (couponIssueList.isEmpty ());
+        List<Coupon> couponList = iCouponRepository.getCouponRecommendation (jsonObject);
+        assertFalse (couponList.isEmpty ());
     }
 
     @Test
     public void getAllCouponRecommendedTest_Failed(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("memberId","USR-00");
+        jsonObject.put ("memberId","USR-0W");
         jsonObject.put ("amount",25000);
-        List<CouponIssue> couponIssueList = iCouponRepository.getCouponRecommendation (jsonObject);
-        assertTrue (couponIssueList.isEmpty ());
+        List<Coupon> couponList = iCouponRepository.getCouponRecommendation (jsonObject);
+        assertTrue (couponList.isEmpty ());
     }
 
     @Test
     public void getAllCouponRecommendedTest_Error(){
-        List<CouponIssue> couponIssueList = null;
+        List<Coupon> couponList = null;
         try {
             JSONObject jsonObject = new JSONObject ();
-            couponIssueList = iCouponRepository.getCouponRecommendation (jsonObject);
-            assertTrue (couponIssueList.isEmpty ());
+            couponList = iCouponRepository.getCouponRecommendation (jsonObject);
+            assertTrue (couponList.isEmpty ());
         }catch (Exception e){
-            assertNull (couponIssueList);
+            assertNull (couponList);
         }
     }
 
     @Test
     public void getDetailCouponByIdTest_Success(){
-        CouponIssue coupon = iCouponRepository.getCouponDetailsById ("TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");
+        Coupon coupon = iCouponRepository.getCouponDetailsById ("TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4");
         assertEquals ("USR-01", coupon.getMemberId ());
     }
 
     @Test
     public void getDetailCouponByIdTest_Empty(){
-        CouponIssue coupon = iCouponRepository.getCouponDetailsById ("CouponId");
+        Coupon coupon = iCouponRepository.getCouponDetailsById ("CouponId");
         assertNull (coupon);
 
     }
 
     @Test
     public void getDetailCouponByIdTest_Error(){
-        CouponIssue coupon = iCouponRepository.getCouponDetailsById ("");
+        Coupon coupon = iCouponRepository.getCouponDetailsById ("");
         assertNull (coupon);
 
     }
@@ -83,7 +82,7 @@ public class CouponRepositoryTest {
     public void saveCouponTest_Success(){
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","mmr-01");
-        jsonObject.put ("amount",40000L);
+        jsonObject.put ("masterId","");
         int rows = iCouponRepository.saveOrUpdate (jsonObject);
         assertEquals (1,rows);
     }
@@ -134,28 +133,39 @@ public class CouponRepositoryTest {
     public void addCouponNewMemberTest_Success(){
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","USR-Tes");
-        jsonObject.put ("status","new member");
+        jsonObject.put ("status","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
         int rows = iCouponRepository.firstCoupon (jsonObject);
         assertEquals (1,rows);
     }
 
     @Test
     public void addCouponNewMemberTest_Failed(){
-        JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("memberId","USR-Test1");
-        jsonObject.put ("status","new member");
+        JSONObject jsonObject = null;
         int rows = iCouponRepository.firstCoupon (jsonObject);
         assertEquals (0,rows);
     }
 
     @Test
     public void checkExistTest_Success(){
-        Coupon coupon = iCouponRepository.checkForNewMember("USR11","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
+        List<Coupon> coupon = iCouponRepository.checkForNewMember("USR-11","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
         assertNull (coupon);
     }
     @Test
     public void checkExistTest_Failed(){
-        Coupon coupon = iCouponRepository.checkForNewMember("USR-Test1","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
+        List<Coupon> coupon = iCouponRepository.checkForNewMember("USR-03","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
         assertNotNull(coupon);
+    }
+    @Test
+    public void deleteDataByIdTest_Success(){
+        String couponId = "TCPN-c9a41268-0177-4798-86f0-a83e297f5e6a";
+        int value = iCouponRepository.deleteById (couponId);
+        assertEquals (1,value);
+    }
+
+    @Test
+    public void deleteDataByIdTest_Failed(){
+        String couponId = "TCPN-c9a41268-0177-4798-86f0-a83e297f5e6a";
+        int value = iCouponRepository.deleteById (couponId);
+        assertEquals (0,value);
     }
 }
