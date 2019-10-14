@@ -1,8 +1,10 @@
 package com.danapprentech.promotion.broker;
 
 import com.danapprentech.promotion.controllers.CouponController;
+import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Couponhistory;
 import com.danapprentech.promotion.response.BaseResponse;
+import com.danapprentech.promotion.response.CouponIssue;
 import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
 import org.json.simple.JSONObject;
@@ -88,7 +90,6 @@ public class Consumer {
             Producer rollback = new Producer ("queue.payment.rollback");
             JSONObject json = new JSONObject ();
             int responseValue = iCouponService.updateStatusTrue (jsonObject);
-            String couponId = (String)jsonObject.get ("couponId");
             if(responseValue == 1){
                 String paymentId =(String) jsonObject.get ("paymentId");
                 Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
@@ -101,10 +102,18 @@ public class Consumer {
                 json.put ("status","Succeed");
                 rollback.sendToExchange (json.toString ());
             }else {
-                logger.info ("try to publish data rollback to queue failed");
-                json.put ("paymentId",jsonObject.get ("paymentId"));
-                json.put ("domain","promotion");
-                json.put ("status","Failed");
+                CouponIssue coupon = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
+                if(coupon==null) {
+                    logger.info ("try to publish data rollback to queue failed");
+                    json.put ("paymentId", jsonObject.get ("paymentId"));
+                    json.put ("domain", "promotion");
+                    json.put ("status", "Failed");
+                }else{
+                    logger.info ("try to publish data rollback to queue failed");
+                    json.put ("paymentId", jsonObject.get ("paymentId"));
+                    json.put ("domain", "promotion");
+                    json.put ("status", "Success");
+                }
                 rollback.sendToExchange (json.toString ());
             }
         }catch (Exception e){
