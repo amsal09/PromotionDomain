@@ -155,7 +155,6 @@ public class CouponController {
                     .withData (json)
                     .build ();
         }
-
         return baseResponse;
     }
 

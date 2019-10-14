@@ -98,7 +98,7 @@ public class CouponService implements ICouponService {
     @Override
     @Transactional
     public String saveOrUpdateCoupon(JSONObject jsonObject) {
-        String getResponse = null;
+        String getResponse = "Failed";
         try{
             Number number = (Number) jsonObject.get ("amount");
             Long value = number.longValue ();
@@ -107,8 +107,13 @@ public class CouponService implements ICouponService {
             json.put ("memberId",jsonObject.get ("memberId"));
             json.put ("masterId",mcoupons.get (0).getmCouponId ());
 
-            if(iCouponRepository.saveOrUpdate (json)!=0){
-                getResponse = iCouponHistoryRepository.addHistory (jsonObject);
+            JSONObject jsonResponse = iCouponRepository.saveOrUpdate (json);
+            if((Integer)jsonResponse.get ("value") == 1){
+                JSONObject buildJSON = new JSONObject ();
+                buildJSON.put ("paymentId",jsonObject.get ("paymentId"));
+                buildJSON.put ("memberId",jsonObject.get ("memberId"));
+                buildJSON.put ("couponId",jsonResponse.get ("key"));
+                getResponse = iCouponHistoryRepository.addHistory (buildJSON);
             }
         }catch (Exception e){
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());

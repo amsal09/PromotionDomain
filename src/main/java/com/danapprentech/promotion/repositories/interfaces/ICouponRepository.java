@@ -10,7 +10,7 @@ public interface ICouponRepository {
     Coupon getCouponDetailsById(String couponID);
     List<Coupon> getAllCoupons();
     List<Coupon> getCouponRecommendation(JSONObject jsonObject);
-    Integer saveOrUpdate(JSONObject jsonObject);
+    JSONObject saveOrUpdate(JSONObject jsonObject);
     Integer updateStatus(JSONObject jsonObject);
     Integer updateStatusTrue(JSONObject jsonObject);
     Integer firstCoupon(JSONObject jsonObject);

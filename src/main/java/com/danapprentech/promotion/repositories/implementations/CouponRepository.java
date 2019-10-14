@@ -120,15 +120,16 @@ public class CouponRepository implements ICouponRepository {
     @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
-    public Integer saveOrUpdate(JSONObject jsonObject) {
+    public JSONObject saveOrUpdate(JSONObject jsonObject) {
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
         int saveCount = 0;
         String uniqueId = "TCPN-";
         logger.info ("Entity manager {}",em);
+        uniqueId += UUID.randomUUID().toString();
+        JSONObject json = new JSONObject ();
         try {
             LocalDate ld = LocalDate.now ().plusDays (20);
-            uniqueId += UUID.randomUUID().toString();
             String memberID = (String) jsonObject.get ("memberId");
             String masterID = (String) jsonObject.get ("masterId");
 
@@ -145,6 +146,8 @@ public class CouponRepository implements ICouponRepository {
                     .executeUpdate ();
 
             em.getTransaction ().commit ();
+            json.put ("value",saveCount);
+            json.put ("key",uniqueId);
             logger.info ("Commit transaction");
         }catch (Exception e){
             logger.info ("Rollback transaction");
@@ -152,7 +155,7 @@ public class CouponRepository implements ICouponRepository {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-        return saveCount;
+        return json;
     }
 
     @Retryable(value = { SQLException.class }, maxAttempts = 3)

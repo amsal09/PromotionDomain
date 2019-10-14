@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
 public class Consumer {
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
     @Autowired
-    private CouponController couponController;
-    @Autowired
     private ICouponHistoryService iCouponHistoryService;
     @Autowired
     private ICouponService iCouponService;
@@ -51,24 +49,26 @@ public class Consumer {
                     logger.info ("try to publish data to queue success");
                     json.put ("paymentId",data.get ("paymentId"));
                     json.put ("domain","promotion");
-                    json.put ("status","succeed");
+                    json.put ("status","Succeed");
                     producer.sendToExchange (json.toString ());
                 }
             }else{
                 if(status.equalsIgnoreCase ("ON_PROGRESS")){
                     logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
-                    BaseResponse baseResponse = couponController.createCoupon (data);
-                    if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
+                    String response = iCouponService.saveOrUpdateCoupon (data);
+                    if(response.equalsIgnoreCase ("success")){
+                        logger.info ("Created coupon success");
                         logger.info ("try to publish data to queue success");
                         json.put ("paymentId",data.get ("paymentId"));
                         json.put ("domain","promotion");
-                        json.put ("status","succeed");
+                        json.put ("status","Succeed");
                         producer.sendToExchange (json.toString ());
                     }else{
+                        logger.info ("Created coupon failed");
                         logger.info ("try to publish data to queue failed");
                         json.put ("paymentId",data.get ("paymentId"));
                         json.put ("domain","promotion");
-                        json.put ("status","failed");
+                        json.put ("status","Failed");
                         producer.sendToExchange (json.toString ());
                     }
                 }else{
@@ -87,20 +87,24 @@ public class Consumer {
         try{
             Producer rollback = new Producer ("queue.payment.rollback");
             JSONObject json = new JSONObject ();
-            BaseResponse baseResponse = couponController.updateCouponStatusTrue (jsonObject);
+            int responseValue = iCouponService.updateStatusTrue (jsonObject);
             String couponId = (String)jsonObject.get ("couponId");
-            if(baseResponse.getMessage ().equalsIgnoreCase ("success")){
-                int value = iCouponService.deleteById (couponId);
+            if(responseValue == 1){
+                String paymentId =(String) jsonObject.get ("paymentId");
+                Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+                if(couponhistory!=null){
+                    iCouponService.deleteById (couponhistory.getCouponId ());
+                }
                 logger.info ("try to publish data rollback to queue success");
                 json.put ("paymentId",jsonObject.get ("paymentId"));
                 json.put ("domain","promotion");
-                json.put ("status","succeed");
+                json.put ("status","Succeed");
                 rollback.sendToExchange (json.toString ());
             }else {
                 logger.info ("try to publish data rollback to queue failed");
                 json.put ("paymentId",jsonObject.get ("paymentId"));
                 json.put ("domain","promotion");
-                json.put ("status","failed");
+                json.put ("status","Failed");
                 rollback.sendToExchange (json.toString ());
             }
         }catch (Exception e){

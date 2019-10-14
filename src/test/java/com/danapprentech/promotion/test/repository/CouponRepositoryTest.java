@@ -83,25 +83,22 @@ public class CouponRepositoryTest {
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","mmr-01");
         jsonObject.put ("masterId","");
-        int rows = iCouponRepository.saveOrUpdate (jsonObject);
-        assertEquals (1,rows);
+        JSONObject rows = iCouponRepository.saveOrUpdate (jsonObject);
+        assertTrue ((Integer)rows.get ("value")==1);
     }
 
     @Test
     public void saveCouponTest_Error(){
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","mmr-01");
-        int rows = iCouponRepository.saveOrUpdate (jsonObject);
-        assertEquals (0,rows);
+        JSONObject rows = iCouponRepository.saveOrUpdate (jsonObject);
+        assertTrue ((Integer)rows.get ("value")==0);
     }
 
     @Test
     public void updateCouponStatusTest_Success(){
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
-        jsonObject.put ("memberId","USR-994facc9-2e40-47c2-840e-77680a90e033");
-        jsonObject.put ("paymentMethodCode","000");
-        jsonObject.put ("paymentId","cf7ec9ed-0614-49c2-bec9-ed0614b9c275");
         int rows = iCouponRepository.updateStatus (jsonObject);
         assertEquals (1,rows);
     }
@@ -148,12 +145,12 @@ public class CouponRepositoryTest {
     @Test
     public void checkExistTest_Success(){
         List<Coupon> coupon = iCouponRepository.checkForNewMember("USR-11","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
-        assertNull (coupon);
+        assertTrue (coupon.isEmpty ());
     }
     @Test
     public void checkExistTest_Failed(){
         List<Coupon> coupon = iCouponRepository.checkForNewMember("USR-03","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
-        assertNotNull(coupon);
+        assertFalse(coupon.isEmpty ());
     }
     @Test
     public void deleteDataByIdTest_Success(){
