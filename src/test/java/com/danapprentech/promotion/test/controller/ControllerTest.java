@@ -41,9 +41,9 @@ public class ControllerTest extends AbstractTest{
     @Test
     public void getCouponDetailTest_Success() throws Exception {
         String uri = "/promotion/detail/TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4";
-        Coupon coupon = new Coupon.CouponBuilder ()
-                .withMemberId ("USR-01")
-                .build ();
+        Coupon coupon = Coupon.builder ()
+                        .memberId ("USR-01")
+                        .build ();
 
         String inputJson = super.mapToJson (coupon);
 
@@ -65,8 +65,8 @@ public class ControllerTest extends AbstractTest{
     @Test
     public void getCouponDetailTest_Empty() throws Exception {
         String uri = "/promotion/detail/01";
-        Coupon coupon = new Coupon.CouponBuilder ()
-                .withMemberId ("USR-01")
+        Coupon coupon = Coupon.builder ()
+                .memberId ("USR-01")
                 .build ();
 
         String inputJson = super.mapToJson (coupon);

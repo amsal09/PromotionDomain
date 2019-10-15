@@ -162,7 +162,6 @@ public class CouponController {
     @PutMapping("/update/coupon")
     public BaseResponse couponRedeem(@RequestBody JSONObject jsonObject){
         BaseResponse baseResponse = null;
-        CouponIssue couponIssue = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
         try {
             logger.info ("try to update coupon status");
             int response = iCouponService.updateStatus (jsonObject);
@@ -170,15 +169,15 @@ public class CouponController {
                 logger.info ("update coupon status success");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Success")
-                        .withData (couponIssue)
+                        .withMessage ("Succeed")
+                        .withData ("")
                         .build ();
             }else {
                 logger.info ("update coupon status failed");
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.OK.value ())
                         .withMessage ("Failed")
-                        .withData (couponIssue)
+                        .withData ("")
                         .build ();
             }
         }catch (Exception e){
@@ -187,7 +186,7 @@ public class CouponController {
             baseResponse= new BaseResponse.BaseResponseBuilder ()
                     .withCode (HttpStatus.BAD_REQUEST.value ())
                     .withMessage (e.getMessage ())
-                    .withData (couponIssue)
+                    .withData ("")
                     .build ();
         }
         return baseResponse;

@@ -3,7 +3,7 @@ package com.danapprentech.promotion.response;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CouponIssue {
+public class CouponIssue{
 
     private String couponId;
     private String memberId;
@@ -91,4 +91,5 @@ public class CouponIssue {
             return couponIssue;
         }
     }
+
 }

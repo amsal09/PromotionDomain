@@ -16,7 +16,6 @@ public class Producer {
     }
 
     public void sendToExchange(String message) {
-
         template.convertAndSend(queue, message);
     }
 

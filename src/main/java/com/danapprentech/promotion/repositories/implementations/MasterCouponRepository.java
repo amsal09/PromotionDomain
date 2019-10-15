@@ -88,8 +88,7 @@ public class MasterCouponRepository implements IMasterCouponRepository {
         logger.info ("Entity manager {}",em);
         try {
             String sql = "from Mcoupon where m_coupon_id = '"+mCouponId+"'"+"" +
-                    " and m_coupon_amount between 1000 and "+amount+"" +
-                    "order by m_coupon_amount desc";
+                    " and m_coupon_amount between 0 and "+amount;
 
             mcoupon = em.createQuery (sql, Mcoupon.class)
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)

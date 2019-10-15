@@ -13,7 +13,7 @@ public interface ICouponRepository {
     JSONObject saveOrUpdate(JSONObject jsonObject);
     Integer updateStatus(JSONObject jsonObject);
     Integer updateStatusTrue(JSONObject jsonObject);
-    Integer firstCoupon(JSONObject jsonObject);
+    JSONObject firstCoupon(JSONObject jsonObject);
     List<Coupon> checkForNewMember(String memberId, String mCouponId);
     Integer deleteById(String couponId);
 }

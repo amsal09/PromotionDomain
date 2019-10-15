@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -113,7 +114,6 @@ public class CouponRepository implements ICouponRepository {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         em.close ();
-
         return couponList;
     }
 
@@ -169,10 +169,11 @@ public class CouponRepository implements ICouponRepository {
         try {
             String couponID = (String) jsonObject.get ("couponId");
 
-            String sql = "update Coupon set coupon_status = 'not available' where coupon_id = '"+couponID+"'"
+            String sql = "update Coupon set coupon_status = 'not available'"+",update_time = :time where coupon_id = '"+couponID+"'"
                     +"and coupon_status = 'available'";
 
             updateCount = em.createNativeQuery (sql)
+                    .setParameter ("time", LocalDateTime.now ())
                     .executeUpdate ();
 
             em.getTransaction ().commit ();
@@ -196,10 +197,11 @@ public class CouponRepository implements ICouponRepository {
         logger.info ("Entity manager {}",em);
         try {
             String couponID = (String) jsonObject.get ("couponId");
-            String sql = "update Coupon set coupon_status = 'available' where coupon_id = '"+couponID+"'"
+            String sql = "update Coupon set coupon_status = 'available', update_time = :time where coupon_id = '"+couponID+"'"
                     +" and coupon_status ='not available'";
 
             updateCount = em.createNativeQuery (sql)
+                    .setParameter ("time", LocalDateTime.now ())
                     .executeUpdate ();
 
             em.getTransaction ().commit ();
@@ -216,8 +218,9 @@ public class CouponRepository implements ICouponRepository {
     @Retryable(value = { SQLException.class }, maxAttempts = 3)
     @Override
     @Transactional
-    public Integer firstCoupon(JSONObject jsonObject) {
+    public JSONObject firstCoupon(JSONObject jsonObject) {
         EntityManager em = getEntityManager ();
+        JSONObject json = new JSONObject ();
         em.getTransaction ().begin ();
         int saveCount = 0;
         String uniqueId = "TCPN-";
@@ -242,15 +245,17 @@ public class CouponRepository implements ICouponRepository {
                     .executeUpdate ();
 
             em.getTransaction ().commit ();
+            json.put ("value",saveCount);
+            json.put ("key",uniqueId);
             logger.info ("Commit transaction");
         }catch (Exception e){
             em.getTransaction ().rollback ();
             logger.info ("Rollback transaction");
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
-            return saveCount;
+            return json;
         }
         em.close ();
-        return saveCount;
+        return json;
     }
 
     @Retryable(value = { SQLException.class }, maxAttempts = 3)

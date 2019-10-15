@@ -1,11 +1,22 @@
 package com.danapprentech.promotion.models;
 
+import com.danapprentech.promotion.helper.ParseDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @ApiModel(description = "All details about coupon")
 public class Coupon {
@@ -21,65 +32,11 @@ public class Coupon {
     private String couponExpired;
     @ApiModelProperty(notes = "Coupon status")
     private String couponStatus;
+    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonDeserialize(using = ParseDeserializer.class)
+    private LocalDateTime createTime;
+    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonDeserialize(using = ParseDeserializer.class)
+    private LocalDateTime updateTime;
 
-    public String getCouponId() {
-        return couponId;
-    }
-
-    public String getmCouponId() {
-        return mCouponId;
-    }
-
-    public String getMemberId() {
-        return memberId;
-    }
-
-    public String getCouponExpired() {
-        return couponExpired;
-    }
-
-    public String getCouponStatus() {
-        return couponStatus;
-    }
-
-    public static final class CouponBuilder{
-        private String couponId;
-        private String mCouponId;
-        private String memberId;
-        private String couponExpired;
-        private String couponStatus;
-
-        public CouponBuilder withCouponId(String couponId){
-            this.couponId = couponId;
-            return this;
-        }
-        public CouponBuilder withMasterCouponId(String mCouponId){
-            this.mCouponId = mCouponId;
-            return this;
-        }
-
-        public CouponBuilder withMemberId(String memberId){
-            this.memberId = memberId;
-            return this;
-        }
-
-        public CouponBuilder withCouponExpired(String couponExpired){
-            this.couponExpired = couponExpired;
-            return this;
-        }
-        public CouponBuilder withCouponStatus(String couponStatus){
-            this.couponStatus = couponStatus;
-            return this;
-        }
-
-        public Coupon build(){
-            Coupon coupon = new Coupon ();
-            coupon.couponId = this.couponId;
-            coupon.mCouponId = this.mCouponId;
-            coupon.memberId = this.memberId;
-            coupon.couponExpired = this.couponExpired;
-            coupon.couponStatus = this.couponStatus;
-            return coupon;
-        }
-    }
 }

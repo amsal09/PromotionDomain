@@ -131,15 +131,16 @@ public class CouponRepositoryTest {
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("memberId","USR-Tes");
         jsonObject.put ("status","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
-        int rows = iCouponRepository.firstCoupon (jsonObject);
-        assertEquals (1,rows);
+        JSONObject json = iCouponRepository.firstCoupon (jsonObject);
+
+        assertEquals (1,(int)json.get ("value"));
     }
 
     @Test
     public void addCouponNewMemberTest_Failed(){
         JSONObject jsonObject = null;
-        int rows = iCouponRepository.firstCoupon (jsonObject);
-        assertEquals (0,rows);
+        JSONObject json = iCouponRepository.firstCoupon (null);
+        assertEquals (0,(int)json.get ("value"));
     }
 
     @Test
