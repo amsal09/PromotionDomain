@@ -145,13 +145,13 @@ public class CouponService implements ICouponService {
             String couponID = (String) jsonObject.get ("couponId");
             String paymentCode = (String) jsonObject.get ("paymentMethodCode");
             String paymentId = (String) jsonObject.get ("paymentId");
-            Long amount = (Long) jsonObject.get ("couponAmount");
+            Integer amount = (Integer)jsonObject.get ("couponAmount");
 
             if(iRedeemHistoryRepository.getRedeemHistoryByPaymentId (paymentId) == null){
                 CouponIssue couponIssue = getCouponDetailsById (couponID);
                 if(!couponIssue.getPaymentMethod ().equalsIgnoreCase ("000")){
                     if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
-                        if(amount == couponIssue.getCouponAmount ()){
+                        if(amount.longValue () == couponIssue.getCouponAmount ()){
                             rows = iCouponRepository.updateStatus (jsonObject);
                             if(rows ==1){
                                 value = iRedeemHistoryRepository.saveRedeemCouponHistory (jsonObject);
@@ -159,7 +159,7 @@ public class CouponService implements ICouponService {
                         }
                     }
                 }else{
-                    if(amount == couponIssue.getCouponAmount ()){
+                    if(amount.longValue () == couponIssue.getCouponAmount ()){
                         rows = iCouponRepository.updateStatus (jsonObject);
                         if(rows ==1){
                             value = iRedeemHistoryRepository.saveRedeemCouponHistory (jsonObject);
