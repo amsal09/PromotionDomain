@@ -85,18 +85,25 @@ public class Consumer {
                     iCouponService.deleteById (couponhistory.getCouponId ());
                 }
                 logger.info ("try to publish data rollback to queue success");
-                successBuild (jsonObject);
+                json.put ("paymentId", jsonObject.get ("paymentId"));
+                json.put ("domain", "promotion");
+                json.put ("status", "Succeed");
                 rollback.sendToExchange (json.toString ());
             }else {
                 CouponIssue coupon = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
                 if(coupon==null) {
                     logger.info ("try to publish data rollback to queue failed");
-                    failedBuild (jsonObject);
+                    json.put ("paymentId", jsonObject.get ("paymentId"));
+                    json.put ("domain", "promotion");
+                    json.put ("status", "Failed");
+                    rollback.sendToExchange (json.toString ());
                 }else{
                     logger.info ("try to publish data rollback to queue success");
-                    successBuild (jsonObject);
+                    json.put ("paymentId", jsonObject.get ("paymentId"));
+                    json.put ("domain", "promotion");
+                    json.put ("status", "Succeed");
+                    rollback.sendToExchange (json.toString ());
                 }
-                rollback.sendToExchange (json.toString ());
             }
         }catch (Exception e){
             logger.warn ("Error: "+e.getMessage ());

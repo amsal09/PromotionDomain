@@ -6,11 +6,11 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
 @ApiModel(description = "Update Coupon Status History")
+@Entity
 public class Couponhistory {
-    @Id
     @ApiModelProperty(notes = "Id of coupon history Table")
+    @Id
     private String couponhistoryId;
     @ApiModelProperty(notes = "Payment Id")
     private String paymentId;
