@@ -1,23 +1,27 @@
 package com.danapprentech.promotion.models;
 
 import io.swagger.annotations.ApiModel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
 @Setter
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel(description = "Redeem History")
+@Entity
 public class Redeemhistory {
     @Id
-    private String id_redeem;
-    private String payment_id;
-    private String coupon_id;
-    private String member_id;
+    private String idRedeem;
+    @ApiModelProperty(notes = "Payment Id")
+    private String paymentId;
+    @ApiModelProperty(notes = "Coupon Id")
+    private String couponId;
+    @ApiModelProperty(notes = "Member Id")
+    private String memberId;
 
 }

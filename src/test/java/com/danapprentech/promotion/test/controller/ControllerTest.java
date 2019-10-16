@@ -1,25 +1,34 @@
 package com.danapprentech.promotion.test.controller;
 
 import com.danapprentech.promotion.models.Coupon;
+import com.danapprentech.promotion.models.Couponhistory;
+import com.danapprentech.promotion.models.Mcoupon;
+import com.danapprentech.promotion.models.Redeemhistory;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
+import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
+import com.danapprentech.promotion.services.interfaces.ICouponService;
+import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
+import com.danapprentech.promotion.services.interfaces.IRedeemHistoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class ControllerTest extends AbstractTest{
+
     @Override
     @Before
     public void setUp() {
@@ -40,13 +49,14 @@ public class ControllerTest extends AbstractTest{
 
     @Test
     public void getCouponDetailTest_Success() throws Exception {
+
+
         String uri = "/promotion/detail/TCPN-07716c66-7fd5-45a3-8e98-44d1c79590a4";
         Coupon coupon = Coupon.builder ()
                         .memberId ("USR-01")
                         .build ();
 
         String inputJson = super.mapToJson (coupon);
-
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(inputJson)).andReturn();
@@ -85,14 +95,15 @@ public class ControllerTest extends AbstractTest{
 
     @Test
     public void getCouponDetailTest_Error() throws Exception {
-        String uri = "/promotion/detail/";
+        JSONObject jsonObject = new JSONObject ();
+        String uri = "/promotion/detail/"+jsonObject;
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .contentType(MediaType.APPLICATION_PDF))
                 .andReturn();
 
         int status = mvcResult.getResponse().getStatus();
-        assertEquals(404, status);
+        assertEquals(500, status);
     }
 
 
@@ -143,11 +154,11 @@ public class ControllerTest extends AbstractTest{
     @Test
     public void getCouponRecommendationTest_Error() throws Exception {
         String uri = "/promotion/recommended";
-
+        JSONObject json = null;
+        String inputJson = super.mapToJson (json);
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn();
-
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content (inputJson)).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(500, status);
     }
@@ -189,7 +200,7 @@ public class ControllerTest extends AbstractTest{
         String content = mvcResult.getResponse().getContentAsString();
         BaseResponse response = super.mapFromJson(content, BaseResponse.class);
 
-        assertTrue(response.getMessage ().equalsIgnoreCase ("Failed to generate coupon"));
+        assertTrue(response.getMessage ().equalsIgnoreCase ("Failed"));
     }
 
     @Test
@@ -208,10 +219,11 @@ public class ControllerTest extends AbstractTest{
     public void updateCouponStatusTest_Success() throws Exception {
         String uri = "/promotion/update/coupon";
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
-        jsonObject.put ("memberId","USR-994facc9-2e40-47c2-840e-77680a90e033");
+        jsonObject.put ("couponId","A1");
+        jsonObject.put ("memberId","A1");
         jsonObject.put ("paymentMethodCode","000");
-        jsonObject.put ("paymentId","cf7ec9ed-0614-49c2-bec9-ed0614b9c275");
+        jsonObject.put ("paymentId","A1");
+        jsonObject.put ("couponAmount",12000);
 
         String inputJson = super.mapToJson(jsonObject);
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri)
@@ -221,7 +233,7 @@ public class ControllerTest extends AbstractTest{
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
         BaseResponse response = super.mapFromJson(content, BaseResponse.class);
-        assertEquals("Success",response.getMessage ());
+        assertEquals("Succeed",response.getMessage ());
     }
 
     @Test
@@ -259,7 +271,7 @@ public class ControllerTest extends AbstractTest{
     public void createCouponNewMember_Success() throws Exception {
         String uri = "/promotion/create/coupon/first";
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("memberId","USR-Test1");
+        jsonObject.put ("memberId","USR-Test11AC");
         jsonObject.put ("status","new member");
 
         String inputJson = super.mapToJson (jsonObject);
@@ -278,7 +290,7 @@ public class ControllerTest extends AbstractTest{
     public void createCouponNewMember_Failed() throws Exception {
         String uri = "/promotion/create/coupon/first";
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("memberId","USR-Test");
+        jsonObject.put ("memberId","USR-Test1");
         jsonObject.put ("status","new member");
 
         String inputJson = super.mapToJson (jsonObject);

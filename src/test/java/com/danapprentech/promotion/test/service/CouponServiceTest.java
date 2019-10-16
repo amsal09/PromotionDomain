@@ -3,7 +3,9 @@ package com.danapprentech.promotion.test.service;
 import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.response.CouponIssue;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
+import com.danapprentech.promotion.test.controller.AbstractTest;
 import org.json.simple.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,11 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @Transactional
 @SpringBootTest
-public class CouponServiceTest {
+public class CouponServiceTest extends AbstractTest {
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
     @Autowired
     private ICouponService iCouponService;
 
@@ -74,10 +80,11 @@ public class CouponServiceTest {
     @Test
     public void updateCouponStatusTest_Success(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
-        jsonObject.put ("memberId","USR-994facc9-2e40-47c2-840e-77680a90e033");
+        jsonObject.put ("couponId","A3");
+        jsonObject.put ("memberId","A3");
         jsonObject.put ("paymentMethodCode","000");
         jsonObject.put ("paymentId","cf7ec9ed-0614-49c2-bec9-ed0614b9c275");
+        jsonObject.put ("couponAmount",12000);
         int value =  iCouponService.updateStatus (jsonObject);
         assertEquals (1,value);
     }
@@ -96,7 +103,7 @@ public class CouponServiceTest {
     @Test
     public void updateCouponStatusTrueTest_Success(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        jsonObject.put ("couponId","B3");
         int rows = iCouponService.updateStatusTrue (jsonObject);
         assertEquals (1,rows);
     }
@@ -104,7 +111,7 @@ public class CouponServiceTest {
     @Test
     public void updateCouponStatusTrueTest_Failed(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        jsonObject.put ("couponId","B3");
         int rows = iCouponService.updateStatusTrue (jsonObject);
         assertEquals (0,rows);
     }
@@ -119,7 +126,7 @@ public class CouponServiceTest {
     @Test
     public void generateNewCouponForNewMemberTest_Failed(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("memberId","New");
+        jsonObject.put ("memberId","USR-Test");
         jsonObject.put ("status","new member");
         int value = iCouponService.firstCoupon (jsonObject);
         assertEquals (0,value);

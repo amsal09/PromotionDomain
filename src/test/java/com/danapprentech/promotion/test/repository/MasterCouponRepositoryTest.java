@@ -2,6 +2,8 @@ package com.danapprentech.promotion.test.repository;
 
 import com.danapprentech.promotion.models.Mcoupon;
 import com.danapprentech.promotion.repositories.interfaces.IMasterCouponRepository;
+import com.danapprentech.promotion.test.controller.AbstractTest;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,12 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @Transactional
 @SpringBootTest
-public class MasterCouponRepositoryTest {
+public class MasterCouponRepositoryTest extends AbstractTest {
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
+
     @Autowired
     private IMasterCouponRepository iMasterCouponRepository;
 

@@ -69,7 +69,7 @@ public class CouponController {
             logger.warn ("Error: {} with coupon id: {}",e.getMessage (), couponId);
             logger.warn ("{}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (HttpStatus.BAD_REQUEST.value ())
+                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                     .withMessage (e.getMessage ())
                     .withData ("Coupon not found for this id :: " + couponId)
                     .build ();
@@ -105,7 +105,7 @@ public class CouponController {
             logger.warn ("Error: {} when to get coupon recommendation",e.getMessage ());
             logger.warn ("{}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (HttpStatus.BAD_REQUEST.value ())
+                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                     .withMessage (e.getMessage ())
                     .withData (couponList)
                     .build ();
@@ -150,7 +150,7 @@ public class CouponController {
             json.put ("paymentId",jsonObject.get ("paymentId"));
             json.put ("field","PROMOTION");
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (HttpStatus.BAD_REQUEST.value ())
+                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                     .withMessage (e.getMessage ())
                     .withData (json)
                     .build ();
@@ -184,7 +184,7 @@ public class CouponController {
             logger.warn ("Error: {}",e.getMessage ());
             logger.warn ("Stacktrace: {}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (HttpStatus.BAD_REQUEST.value ())
+                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                     .withMessage (e.getMessage ())
                     .withData ("")
                     .build ();
@@ -217,7 +217,7 @@ public class CouponController {
             logger.warn ("Error: {}",e.getMessage ());
             logger.warn ("Stacktrace: {}"+e.getStackTrace ());
             baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (HttpStatus.BAD_REQUEST.value ())
+                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                     .withMessage (e.getMessage ())
                     .withData ("null")
                     .build ();
@@ -228,10 +228,9 @@ public class CouponController {
     @ApiOperation(value = "Create new coupon for new member")
     @PostMapping(value = "/create/coupon/first")
     public BaseResponse createCouponForNewMember(@RequestBody String body) throws ParserExeption {
-        System.out.println (body);
         JSONParser parser = new JSONParser ();
         JSONObject jsonObject;
-        String response="failed";
+        String response="Failed";
         BaseResponse baseResponse = null;
         try {
             logger.info ("try to update coupon status to be true");

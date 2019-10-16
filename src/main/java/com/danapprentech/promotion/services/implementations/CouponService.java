@@ -3,6 +3,7 @@ package com.danapprentech.promotion.services.implementations;
 import com.danapprentech.promotion.broker.Producer;
 import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Mcoupon;
+import com.danapprentech.promotion.models.Redeemhistory;
 import com.danapprentech.promotion.repositories.interfaces.ICouponHistoryRepository;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
 import com.danapprentech.promotion.repositories.interfaces.IMasterCouponRepository;
@@ -15,8 +16,9 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.client.RestTemplate;
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -24,7 +26,7 @@ import java.util.*;
 @Transactional
 public class CouponService implements ICouponService {
     private static final Logger logger = LoggerFactory.getLogger(CouponService.class);
-
+    private RestTemplate restTemplate = new RestTemplate();
     @Autowired
     private ICouponRepository iCouponRepository;
     @Autowired
@@ -33,7 +35,8 @@ public class CouponService implements ICouponService {
     private ICouponHistoryRepository iCouponHistoryRepository;
     @Autowired
     private IRedeemHistoryRepository iRedeemHistoryRepository;
-
+    @Value ("${domain.data.update.url}")
+    private String updateStatusCouponInDataURL;
     private Producer producer = new Producer ("queue.promotion.data");
 
     @Override
@@ -141,13 +144,14 @@ public class CouponService implements ICouponService {
     public Integer updateStatus(JSONObject jsonObject) {
         int rows =0;
         int value =0;
+        Redeemhistory redeemhistory = null;
         try{
             String couponID = (String) jsonObject.get ("couponId");
             String paymentCode = (String) jsonObject.get ("paymentMethodCode");
             String paymentId = (String) jsonObject.get ("paymentId");
             Integer amount = (Integer)jsonObject.get ("couponAmount");
-
-            if(iRedeemHistoryRepository.getRedeemHistoryByPaymentId (paymentId) == null){
+            redeemhistory = iRedeemHistoryRepository.getRedeemHistoryByPaymentId (paymentId);
+            if(redeemhistory == null){
                 CouponIssue couponIssue = getCouponDetailsById (couponID);
                 if(!couponIssue.getPaymentMethod ().equalsIgnoreCase ("000")){
                     if(paymentCode.equalsIgnoreCase (couponIssue.getPaymentMethod ())){
@@ -155,6 +159,7 @@ public class CouponService implements ICouponService {
                             rows = iCouponRepository.updateStatus (jsonObject);
                             if(rows ==1){
                                 value = iRedeemHistoryRepository.saveRedeemCouponHistory (jsonObject);
+                                updateCouponStatusInData(jsonObject);
                             }
                         }
                     }
@@ -163,6 +168,7 @@ public class CouponService implements ICouponService {
                         rows = iCouponRepository.updateStatus (jsonObject);
                         if(rows ==1){
                             value = iRedeemHistoryRepository.saveRedeemCouponHistory (jsonObject);
+                            updateCouponStatusInData(jsonObject);
                         }
                     }
                 }
@@ -176,8 +182,16 @@ public class CouponService implements ICouponService {
     @Override
     @Transactional
     public Integer updateStatusTrue(JSONObject jsonObject) {
-
-        return iCouponRepository.updateStatusTrue (jsonObject);
+        int response = 0;
+        try {
+            response = iCouponRepository.updateStatusTrue (jsonObject);
+            if(response == 1){
+                updateCouponStatusInData(jsonObject);
+            }
+        }catch (Exception e){
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+        }
+        return response;
     }
 
     @Override
@@ -239,6 +253,22 @@ public class CouponService implements ICouponService {
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
         }
         return couponDetail;
+    }
+
+    public String updateCouponStatusInData(JSONObject jsonObject){
+        try{
+            String couponID = (String) jsonObject.get ("couponId");
+            CouponIssue couponIssue = getCouponDetailsById (couponID);
+            Coupon coupon = iCouponRepository.getCouponDetailsById (couponID);
+            JSONObject json = new JSONObject();
+            json.put("couponStatus",couponIssue.getCouponStatus ());
+            json.put ("updatedAt",coupon.getUpdateTime ());
+            json.put ("type","UPDATE");
+            producer.sendToExchange (json.toString ());
+        }catch (Exception e){
+            logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+        }
+        return "SUCCEED";
     }
 
 }

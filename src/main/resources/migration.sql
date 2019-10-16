@@ -1,0 +1,8 @@
+--
+-- insert into `mcoupon` (m_coupon_id, m_coupon_amount, m_coupon_description, coupon_status) values ('A1','MCPN-33640c9c-ec39-4b73-81a4-480a6369a6e4','A1','2019-10-24','available');
+-- insert into `coupon` (coupon_id, m_coupon_id, member_id, coupon_expired, coupon_status) values ('A1','MCPN-33640c9c-ec39-4b73-81a4-480a6369a6e4','A1','2019-10-24','available');
+-- insert into `coupon` (coupon_id, m_coupon_id, member_id, coupon_expired, coupon_status) values ('A2','MCPN-33640c9c-ec39-4b73-81a4-480a6369a6e4','A1','2019-10-24','available');
+-- insert into `coupon` (coupon_id, m_coupon_id, member_id, coupon_expired, coupon_status) values ('A3','MCPN-33640c9c-ec39-4b73-81a4-480a6369a6e4','A1','2019-10-24','available');
+-- insert into `coupon` (coupon_id, m_coupon_id, member_id, coupon_expired, coupon_status) values ('B1','MCPN-33640c9c-ec39-4b73-81a4-480a6369a6e4','A1','2019-10-24','not available');
+-- insert into `coupon` (coupon_id, m_coupon_id, member_id, coupon_expired, coupon_status) values ('B2','MCPN-33640c9c-ec39-4b73-81a4-480a6369a6e4','A1','2019-10-24','not available');
+-- insert into `coupon` (coupon_id, m_coupon_id, member_id, coupon_expired, coupon_status) values ('B3','MCPN-33640c9c-ec39-4b73-81a4-480a6369a6e4','A1','2019-10-24','not available');

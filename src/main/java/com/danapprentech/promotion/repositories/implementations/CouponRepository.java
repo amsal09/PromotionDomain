@@ -153,6 +153,8 @@ public class CouponRepository implements ICouponRepository {
             logger.info ("Rollback transaction");
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
+            json.put ("value",saveCount);
+            json.put ("key",uniqueId);
         }
         em.close ();
         return json;
@@ -168,9 +170,9 @@ public class CouponRepository implements ICouponRepository {
         logger.info ("Entity manager {}",em);
         try {
             String couponID = (String) jsonObject.get ("couponId");
-
+            String memberId = (String) jsonObject.get ("memberId");
             String sql = "update Coupon set coupon_status = 'not available'"+",update_time = :time where coupon_id = '"+couponID+"'"
-                    +"and coupon_status = 'available'";
+                    +"and coupon_status = 'available' and member_id = '"+memberId+"'";
 
             updateCount = em.createNativeQuery (sql)
                     .setParameter ("time", LocalDateTime.now ())
@@ -252,7 +254,8 @@ public class CouponRepository implements ICouponRepository {
             em.getTransaction ().rollback ();
             logger.info ("Rollback transaction");
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
-            return json;
+            json.put ("value",saveCount);
+            json.put ("key",uniqueId);
         }
         em.close ();
         return json;

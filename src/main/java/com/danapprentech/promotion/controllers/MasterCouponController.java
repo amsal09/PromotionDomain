@@ -51,7 +51,7 @@ public class MasterCouponController {
             }
         }catch (Exception e){
             baseResponse = new BaseResponse.BaseResponseBuilder ()
-                            .withCode (HttpStatus.BAD_REQUEST.value ())
+                            .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                             .withMessage (e.getMessage ())
                             .withData ("error")
                             .build ();

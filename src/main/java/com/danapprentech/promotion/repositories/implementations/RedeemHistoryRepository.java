@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -25,7 +26,7 @@ public class RedeemHistoryRepository implements IRedeemHistoryRepository {
         return emf.createEntityManager ();
     }
 
-
+    @Transactional
     @Override
     public Redeemhistory getRedeemHistoryByPaymentId(String paymentId) {
         Redeemhistory redeem = null;
@@ -34,7 +35,6 @@ public class RedeemHistoryRepository implements IRedeemHistoryRepository {
         logger.info ("Entity manager {}",em);
         try {
             String sql = "from Redeemhistory where payment_id = '"+paymentId+"'";
-
             redeem = em.createQuery (sql, Redeemhistory.class)
                     .setLockMode (LockModeType.PESSIMISTIC_WRITE)
                     .getSingleResult ();
@@ -48,6 +48,7 @@ public class RedeemHistoryRepository implements IRedeemHistoryRepository {
         return redeem;
     }
 
+    @Transactional
     @Override
     public Integer saveRedeemCouponHistory(JSONObject jsonObject) {
         EntityManager em = getEntityManager ();

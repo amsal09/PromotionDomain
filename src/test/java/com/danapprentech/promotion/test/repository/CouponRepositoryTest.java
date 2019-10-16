@@ -2,7 +2,9 @@ package com.danapprentech.promotion.test.repository;
 
 import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.repositories.interfaces.ICouponRepository;
+import com.danapprentech.promotion.test.controller.AbstractTest;
 import org.json.simple.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,13 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @Transactional
 @SpringBootTest
-public class CouponRepositoryTest {
+public class CouponRepositoryTest extends AbstractTest {
     @Autowired
     ICouponRepository iCouponRepository;
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
 
     @Test
     public void getAllCoupon(){
@@ -89,16 +95,15 @@ public class CouponRepositoryTest {
 
     @Test
     public void saveCouponTest_Error(){
-        JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("memberId","mmr-01");
-        JSONObject rows = iCouponRepository.saveOrUpdate (jsonObject);
-        assertTrue ((Integer)rows.get ("value")==0);
+        JSONObject rows = iCouponRepository.saveOrUpdate (null);
+        assertTrue ((Integer) rows.get ("value") == 0);
     }
 
     @Test
     public void updateCouponStatusTest_Success(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        jsonObject.put ("couponId","A2");
+        jsonObject.put ("memberId","A2");
         int rows = iCouponRepository.updateStatus (jsonObject);
         assertEquals (1,rows);
     }
@@ -106,6 +111,7 @@ public class CouponRepositoryTest {
     @Test
     public void updateCouponStatusTest_Error(){
         JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
         int rows = iCouponRepository.updateStatus (jsonObject);
         assertEquals (0,rows);
     }
@@ -113,7 +119,7 @@ public class CouponRepositoryTest {
     @Test
     public void updateCouponStatusTrueTest_Success(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        jsonObject.put ("couponId","B1");
         int rows = iCouponRepository.updateStatusTrue (jsonObject);
         assertEquals (1,rows);
     }
@@ -121,7 +127,7 @@ public class CouponRepositoryTest {
     @Test
     public void updateCouponStatusTrueTest_Failed(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("couponId","TCPN-1094c2c6-499a-48c9-b3c0-c269a71a10a3");
+        jsonObject.put ("couponId","B1");
         int rows = iCouponRepository.updateStatusTrue (jsonObject);
         assertEquals (0,rows);
     }
@@ -129,8 +135,8 @@ public class CouponRepositoryTest {
     @Test
     public void addCouponNewMemberTest_Success(){
         JSONObject jsonObject = new JSONObject ();
-        jsonObject.put ("memberId","USR-Tes");
-        jsonObject.put ("status","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
+        jsonObject.put ("memberId","USR-TesAX");
+        jsonObject.put ("masterId","MCPN-e4770f4c-0d5d-4abe-a508-f666721abce9");
         JSONObject json = iCouponRepository.firstCoupon (jsonObject);
 
         assertEquals (1,(int)json.get ("value"));
@@ -138,7 +144,6 @@ public class CouponRepositoryTest {
 
     @Test
     public void addCouponNewMemberTest_Failed(){
-        JSONObject jsonObject = null;
         JSONObject json = iCouponRepository.firstCoupon (null);
         assertEquals (0,(int)json.get ("value"));
     }
@@ -155,7 +160,7 @@ public class CouponRepositoryTest {
     }
     @Test
     public void deleteDataByIdTest_Success(){
-        String couponId = "TCPN-c9a41268-0177-4798-86f0-a83e297f5e6a";
+        String couponId = "TCPN-f50d0cdc-3062-4acc-92e2-e74a8af7af3b";
         int value = iCouponRepository.deleteById (couponId);
         assertEquals (1,value);
     }
