@@ -13,6 +13,7 @@ import com.danapprentech.promotion.response.CouponIssue;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import java.util.*;
 @Transactional
 public class CouponService implements ICouponService {
     private static final Logger logger = LoggerFactory.getLogger(CouponService.class);
-    private RestTemplate restTemplate = new RestTemplate();
+
     @Autowired
     private ICouponRepository iCouponRepository;
     @Autowired
@@ -35,8 +36,7 @@ public class CouponService implements ICouponService {
     private ICouponHistoryRepository iCouponHistoryRepository;
     @Autowired
     private IRedeemHistoryRepository iRedeemHistoryRepository;
-    @Value ("${domain.data.update.url}")
-    private String updateStatusCouponInDataURL;
+
     private Producer producer = new Producer ("queue.promotion.data");
 
     @Override
@@ -64,7 +64,6 @@ public class CouponService implements ICouponService {
     @Override
     @Transactional
     public List<Coupon> getAllCoupons() {
-
         return iCouponRepository.getAllCoupons ();
     }
 
@@ -123,15 +122,19 @@ public class CouponService implements ICouponService {
 
             JSONObject jsonResponse = iCouponRepository.saveOrUpdate (json);
             if((Integer)jsonResponse.get ("value") == 1){
+                getResponse = "Success";
                 CouponDetail couponDetail = getCouponDetailCoupon ((String)jsonResponse.get ("key"));
                 ObjectMapper mapper = new ObjectMapper ();
                 String couponString = mapper.writeValueAsString (couponDetail);
-                producer.sendToExchange (couponString);
+                JSONParser parser = new JSONParser ();
+                JSONObject object = (JSONObject) parser.parse (couponString);
+                object.put ("type","CREATE");
+                producer.sendToExchange (object.toJSONString ());
                 JSONObject buildJSON = new JSONObject ();
                 buildJSON.put ("paymentId",jsonObject.get ("paymentId"));
                 buildJSON.put ("memberId",jsonObject.get ("memberId"));
                 buildJSON.put ("couponId",jsonResponse.get ("key"));
-                getResponse = iCouponHistoryRepository.addHistory (buildJSON);
+                iCouponHistoryRepository.addHistory (buildJSON);
             }
         }catch (Exception e){
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
@@ -213,7 +216,10 @@ public class CouponService implements ICouponService {
                     CouponDetail couponDetail = getCouponDetailCoupon ((String)jsonResponse.get ("key"));
                     ObjectMapper mapper = new ObjectMapper ();
                     String couponString = mapper.writeValueAsString (couponDetail);
-                    producer.sendToExchange (couponString);
+                    JSONParser parser = new JSONParser ();
+                    JSONObject object = (JSONObject) parser.parse (couponString);
+                    object.put ("type","CREATE");
+                    producer.sendToExchange (object.toJSONString ());
                 }
             }
         }catch (Exception e){
@@ -231,6 +237,7 @@ public class CouponService implements ICouponService {
     @Override
     @Transactional
     public Integer deleteById(String couponId) {
+
         return iCouponRepository.deleteById (couponId);
     }
 

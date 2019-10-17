@@ -16,14 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class Consumer {
-    private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
+public class PaymentCouponListener {
+    private static final Logger logger = LoggerFactory.getLogger(PaymentCouponListener.class);
     @Autowired
     private ICouponHistoryService iCouponHistoryService;
     @Autowired
     private ICouponService iCouponService;
 
-    private Producer producer = new Producer ("queue.payment");
+    private Producer producer = new Producer ("queue.payment.promotion");
     private Producer rollback = new Producer ("queue.payment.rollback");
     private JSONObject json = new JSONObject ();
 
@@ -43,25 +43,20 @@ public class Consumer {
                 System.out.println ("Exist");
                 if(status.equalsIgnoreCase ("failed")){
                     rollbackData (data);
-                }else{
-                    logger.info ("try to publish data to queue success");
-                    successBuild (data);
-                    producer.sendToExchange (json.toString ());
+                }else {
+                    logger.info ("Coupon has been generated");
                 }
             }else{
                 if(status.equalsIgnoreCase ("ON_PROGRESS")){
                     logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
                     String response = iCouponService.saveOrUpdateCoupon (data);
-                    if(response.equalsIgnoreCase ("success")){
-                        logger.info ("Created coupon success");
-                        logger.info ("try to publish data to queue success");
-                        successBuild (data);
-                        producer.sendToExchange (json.toString ());
-                    }else{
+                    if(response.equalsIgnoreCase ("Failed")){
                         logger.info ("Created coupon failed");
-                        logger.info ("try to publish data to queue failed");
-                        failedBuild (data);
-                        producer.sendToExchange (json.toString ());
+                        logger.info ("try to publish data to queue");
+                        producer.sendToExchange (message);
+                    }else{
+                        logger.info ("Created coupon success");
+
                     }
                 }else{
                     logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));

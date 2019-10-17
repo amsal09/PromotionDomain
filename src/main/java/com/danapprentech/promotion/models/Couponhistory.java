@@ -2,12 +2,18 @@ package com.danapprentech.promotion.models;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @ApiModel(description = "Update Coupon Status History")
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Couponhistory {
     @ApiModelProperty(notes = "Id of coupon history Table")
     @Id

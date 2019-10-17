@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
 @Transactional
 @SpringBootTest
 public class MasterCouponRepositoryTest extends AbstractTest {
+    @Autowired
+    private IMasterCouponRepository iMasterCouponRepository;
+
     @Before
     public void setUp() {
         super.setUp();
     }
-
-    @Autowired
-    private IMasterCouponRepository iMasterCouponRepository;
 
     @Test
     public void getDetailTest_Success(){

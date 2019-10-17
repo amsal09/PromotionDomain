@@ -16,21 +16,27 @@ public class MasterCouponService implements IMasterCouponService {
     private IMasterCouponRepository iMasterCouponRepository;
 
     @Override
+    @Transactional
     public Integer saveOrUpdate(Mcoupon mcoupon) {
-        return iMasterCouponRepository.saveOrUpdate (mcoupon);
+        int value = 0;
+        value = iMasterCouponRepository.saveOrUpdate (mcoupon);
+        return value;
     }
 
     @Override
+    @Transactional
     public Mcoupon getDetailById(String mCouponId) {
         return iMasterCouponRepository.getDetailById (mCouponId);
     }
 
     @Override
+    @Transactional
     public Mcoupon getAllById(String mCouponId, Long amount) {
         return iMasterCouponRepository.getAllById (mCouponId, amount);
     }
 
     @Override
+    @Transactional
     public List<Mcoupon> checkMinimumTransaction(Long amount) {
         return iMasterCouponRepository.checkMinimumTransaction (amount);
     }

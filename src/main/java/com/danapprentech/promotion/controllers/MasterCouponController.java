@@ -12,30 +12,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "master")
+@RequestMapping(value = "/master")
 public class MasterCouponController {
 
-    @Autowired
     private IMasterCouponService iMasterCouponService;
+    @Autowired
+    public MasterCouponController(IMasterCouponService iMasterCouponService) {
+        this.iMasterCouponService = iMasterCouponService;
+    }
 
     @PostMapping(value = "/add")
     public BaseResponse addMasterCoupon(@RequestBody JSONObject jsonObject){
         BaseResponse baseResponse =null;
-        Mcoupon mcoupon = null;
         try {
             Number number1 = (Number) jsonObject.get ("m_coupon_amount");
             Long value1 = number1.longValue ();
             Number number2 = (Number) jsonObject.get ("m_minimum_transaction");
             Long value2 = number2.longValue ();
 
-            mcoupon = new Mcoupon.MasterCouponBuilder ()
+            Mcoupon mcoupon = new Mcoupon.MasterCouponBuilder ()
                     .withMCouponAmount (value1)
                     .withMCouponDesc ((String) jsonObject.get ("m_coupon_description"))
                     .withMCouponMinTransaction (value2)
                     .withPaymentMethod ((String)jsonObject.get ("paymentMethod"))
                     .build ();
 
-            int saveRow= iMasterCouponService.saveOrUpdate (mcoupon);
+            int saveRow = iMasterCouponService.saveOrUpdate (mcoupon);
+            System.out.println (saveRow);
             if(saveRow==1){
                 baseResponse = new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.CREATED.value ())

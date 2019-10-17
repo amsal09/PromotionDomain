@@ -1,6 +1,7 @@
 package com.danapprentech.promotion.controllers;
 
 import com.danapprentech.promotion.exception.ParserExeption;
+import com.danapprentech.promotion.exception.ResourceNotFoundException;
 import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
@@ -44,7 +45,7 @@ public class CouponController {
 
     @ApiOperation(value = "Get an coupon by coupon Id")
     @GetMapping(value = "/detail/{couponId}")
-    public BaseResponse getCouponDetailBasedOnCouponID(@PathVariable String couponId) {
+    public BaseResponse getCouponDetailBasedOnCouponID(@PathVariable String couponId) throws ResourceNotFoundException {
         CouponIssue coupon = null;
         BaseResponse baseResponse=null;
         try {
@@ -62,7 +63,7 @@ public class CouponController {
                 baseResponse= new BaseResponse.BaseResponseBuilder ()
                         .withCode (HttpStatus.OK.value ())
                         .withMessage ("Coupon not found for this id :: " + couponId)
-                        .withData (coupon)
+                        .withData (null)
                         .build ();
             }
         }catch (Exception e){
@@ -71,7 +72,7 @@ public class CouponController {
             baseResponse= new BaseResponse.BaseResponseBuilder ()
                     .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                     .withMessage (e.getMessage ())
-                    .withData ("Coupon not found for this id :: " + couponId)
+                    .withData (null)
                     .build ();
         }
         return baseResponse;
@@ -187,39 +188,6 @@ public class CouponController {
                     .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
                     .withMessage (e.getMessage ())
                     .withData ("")
-                    .build ();
-        }
-        return baseResponse;
-    }
-
-    @ApiOperation(value = "Rollback status coupon to be true")
-    @PutMapping("/update/coupon/true")
-    public BaseResponse updateCouponStatusTrue(@RequestBody JSONObject jsonObject){
-        BaseResponse baseResponse = null;
-        try{
-            logger.info ("try to update coupon status to be true");
-            if(iCouponService.updateStatusTrue (jsonObject) !=0){
-                logger.info ("update coupon status success");
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Success")
-                        .withData ("rollback coupon status successfully")
-                        .build ();
-            }else{
-                logger.info ("update coupon status failed");
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Failed")
-                        .withData ("rollback coupon status failed")
-                        .build ();
-            }
-        }catch (Exception e){
-            logger.warn ("Error: {}",e.getMessage ());
-            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
-            baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
-                    .withMessage (e.getMessage ())
-                    .withData ("null")
                     .build ();
         }
         return baseResponse;

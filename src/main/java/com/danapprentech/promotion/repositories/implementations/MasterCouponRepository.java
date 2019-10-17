@@ -22,13 +22,10 @@ public class MasterCouponRepository implements IMasterCouponRepository {
     @Autowired
     private EntityManagerFactory emf;
 
-    private EntityManager getEntityManager(){
-        return emf.createEntityManager ();
-    }
-
     @Override
     @Transactional
     public Integer saveOrUpdate(Mcoupon mcoupon) {
+        System.out.println ("SINI");
         EntityManager em = getEntityManager ();
         em.getTransaction ().begin ();
         int saveCount = 0;
@@ -49,6 +46,7 @@ public class MasterCouponRepository implements IMasterCouponRepository {
                     .setParameter (5,mcoupon.getPaymentMethod ())
                     .executeUpdate ();
             em.getTransaction ().commit ();
+            logger.info ("Save Coupon Master Data Success");
         }catch (Exception e){
             em.getTransaction ().rollback ();
             logger.warn ("Error: {} - {}",e.getMessage (),e.getStackTrace ());
@@ -145,5 +143,8 @@ public class MasterCouponRepository implements IMasterCouponRepository {
         }
         em.close ();
         return mcoupon;
+    }
+    private EntityManager getEntityManager(){
+        return emf.createEntityManager ();
     }
 }
