@@ -6,9 +6,13 @@ import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
 import com.danapprentech.promotion.test.controller.AbstractTest;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +20,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import static org.junit.Assert.*;
-
+@RunWith(SpringRunner.class)
+@Transactional
+@SpringBootTest
 public class MasterCouponServiceTest extends AbstractTest {
     @MockBean
     private IMasterCouponRepository iMasterCouponRepository;
@@ -114,5 +120,31 @@ public class MasterCouponServiceTest extends AbstractTest {
         String desc = "coupon description";
         Mcoupon obj = iMasterCouponService.getCouponNewMember (desc);
         assertTrue (obj == null);
+    }
+    @Test
+    public void addMasterDatTest_Success(){
+        Mcoupon mcoupon = new Mcoupon.MasterCouponBuilder ()
+                .withMCouponId ("Mid")
+                .withMCouponDesc ("Coupon")
+                .withMCouponAmount (2000L)
+                .withMCouponMinTransaction (0L)
+                .withPaymentMethod ("000")
+                .build ();
+        when (iMasterCouponRepository.saveOrUpdate (any ())).thenReturn (1);
+        int value = iMasterCouponService.saveOrUpdate (mcoupon);
+        assertTrue (value==1);
+    }
+    @Test
+    public void addMasterDatTest_Failed(){
+        Mcoupon mcoupon = new Mcoupon.MasterCouponBuilder ()
+                .withMCouponId ("Mid")
+                .withMCouponDesc ("Coupon")
+                .withMCouponAmount (2000L)
+                .withMCouponMinTransaction (0L)
+                .withPaymentMethod ("000")
+                .build ();
+        when (iMasterCouponRepository.saveOrUpdate (any ())).thenReturn (0);
+        int value = iMasterCouponService.saveOrUpdate (mcoupon);
+        assertTrue (value==0);
     }
 }
