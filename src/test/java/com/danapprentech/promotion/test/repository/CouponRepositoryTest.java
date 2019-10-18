@@ -160,7 +160,7 @@ public class CouponRepositoryTest extends AbstractTest {
     }
     @Test
     public void deleteDataByIdTest_Success(){
-        String couponId = "TCPN-f50d0cdc-3062-4acc-92e2-e74a8af7af3b";
+        String couponId = "TCPN-edc45722-34f7-49a2-93aa-675704267fef";
         int value = iCouponRepository.deleteById (couponId);
         assertEquals (1,value);
     }

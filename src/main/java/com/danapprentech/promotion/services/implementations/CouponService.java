@@ -152,7 +152,7 @@ public class CouponService implements ICouponService {
             String couponID = (String) jsonObject.get ("couponId");
             String paymentCode = (String) jsonObject.get ("paymentMethodCode");
             String paymentId = (String) jsonObject.get ("paymentId");
-            Integer amount = (Integer)jsonObject.get ("couponAmount");
+            Integer amount = (Integer) jsonObject.get ("couponAmount");
             redeemhistory = iRedeemHistoryRepository.getRedeemHistoryByPaymentId (paymentId);
             if(redeemhistory == null){
                 CouponIssue couponIssue = getCouponDetailsById (couponID);
@@ -268,8 +268,9 @@ public class CouponService implements ICouponService {
             CouponIssue couponIssue = getCouponDetailsById (couponID);
             Coupon coupon = iCouponRepository.getCouponDetailsById (couponID);
             JSONObject json = new JSONObject();
+            json.put ("couponId",couponIssue.getCouponId ());
             json.put("couponStatus",couponIssue.getCouponStatus ());
-            json.put ("updatedAt",coupon.getUpdateTime ());
+            json.put ("updatedAt",coupon.getUpdateTime ().toString ());
             json.put ("type","UPDATE");
             producer.sendToExchange (json.toString ());
         }catch (Exception e){

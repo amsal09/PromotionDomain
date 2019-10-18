@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -77,6 +78,19 @@ public class ControllerTest extends AbstractTest{
         assertEquals(200, status);
         assertTrue(mvcResult.getResponse().getContentAsString().isEmpty ());
     }
+    @Test
+    public void getCouponListTest_Error() throws Exception {
+
+        when(iCouponService.getAllCoupons ()).thenThrow (new RuntimeException ());
+
+        String inputJson = super.mapToJson (null);
+        String url = "/promotion/all";
+        MvcResult mvcResult = mvc.perform (MockMvcRequestBuilders.get (url)
+                .accept (MediaType.APPLICATION_JSON_VALUE)
+                .content (inputJson)).andReturn ();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(500, status);
+    }
 
     @Test
     public void getCouponDetailTest_Success() throws Exception {
@@ -125,6 +139,7 @@ public class ControllerTest extends AbstractTest{
         assertTrue(response.getMessage ().equalsIgnoreCase ("Coupon not found for this id :: "+couponId));
     }
 
+
     @Test
     public void getCouponRecommendationTest_Success() throws Exception {
         String url = "/promotion/recommended";
@@ -166,7 +181,7 @@ public class ControllerTest extends AbstractTest{
         jsonObject.put ("memberId","USR-88");
         jsonObject.put ("amount",25000);
 
-        when (iCouponService.getCouponRecommendation (jsonObject)).thenReturn (null);
+        when (iCouponService.getCouponRecommendation (jsonObject)).thenReturn (new ArrayList<> ());
         String inputJson = super.mapToJson (jsonObject);
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -179,7 +194,7 @@ public class ControllerTest extends AbstractTest{
 
         ObjectMapper mapper = new ObjectMapper ();
         CouponIssue[] couponIssue= mapper.convertValue (response.getData (),CouponIssue[].class);
-        assertTrue(couponIssue == null);
+        assertTrue(couponIssue.length == 0);
     }
 
     @Test
@@ -237,6 +252,7 @@ public class ControllerTest extends AbstractTest{
     @Test
     public void createNewCouponTest_Error() throws Exception {
         String url = "/promotion/create/coupon";
+        when (iCouponService.saveOrUpdateCoupon (any())).thenThrow (new RuntimeException ());
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
@@ -288,7 +304,7 @@ public class ControllerTest extends AbstractTest{
     @Test
     public void updateCouponStatusTest_Error() throws Exception {
         String url = "/promotion/update/coupon";
-
+        when (iCouponService.updateStatus (any ())).thenThrow (new RuntimeException ());
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(url)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
@@ -336,6 +352,7 @@ public class ControllerTest extends AbstractTest{
 
     @Test
     public void createCouponNewMember_Error() throws Exception {
+        when (iCouponService.firstCoupon (any ())).thenThrow (new RuntimeException ());
         String url = "/promotion/create/coupon/first";
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))

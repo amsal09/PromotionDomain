@@ -14,11 +14,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.transaction.Transactional;
+
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class MasterCouponControllerTest extends AbstractTest{
     @MockBean
     private IMasterCouponService iMasterCouponService;
@@ -31,20 +35,13 @@ public class MasterCouponControllerTest extends AbstractTest{
     @Test
     public void addDataMasterTest_Success() throws Exception {
         String url = "/master/add";
-        Mcoupon mcoupon = new Mcoupon.MasterCouponBuilder ()
-                .withPaymentMethod ("000")
-                .withMCouponMinTransaction (12000L)
-                .withMCouponAmount (3000L)
-                .withMCouponDesc ("3K")
-                .withMCouponId ("MCPN-01")
-                .build ();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put ("m_coupon_description","17 Augustus");
         jsonObject.put ("m_minimum_transaction",25000);
         jsonObject.put ("m_coupon_amount",12000);
         jsonObject.put ("paymentMethod","000");
 
-        when (iMasterCouponService.saveOrUpdate (mcoupon)).thenReturn (1);
+        when (iMasterCouponService.saveOrUpdate (any ())).thenReturn (1);
         String inputJson = super.mapToJson (jsonObject);
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post (url)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -61,13 +58,6 @@ public class MasterCouponControllerTest extends AbstractTest{
     @Test
     public void addDataMasterTest_Failed() throws Exception {
         String uri = "/master/add";
-        Mcoupon mcoupon = new Mcoupon.MasterCouponBuilder ()
-                .withPaymentMethod ("000")
-                .withMCouponMinTransaction (12000L)
-                .withMCouponAmount (3000L)
-                .withMCouponDesc ("3K")
-                .withMCouponId ("ID")
-                .build ();
 
         JSONObject jsonObject = new JSONObject ();
         jsonObject.put ("m_coupon_description","16 Agustus");
@@ -75,7 +65,7 @@ public class MasterCouponControllerTest extends AbstractTest{
         jsonObject.put ("m_coupon_amount",12000);
 
         String inputJson = super.mapToJson (jsonObject);
-        when (iMasterCouponService.saveOrUpdate (mcoupon)).thenReturn (0);
+        when (iMasterCouponService.saveOrUpdate (any ())).thenReturn (0);
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post (uri)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(inputJson)).andReturn();
