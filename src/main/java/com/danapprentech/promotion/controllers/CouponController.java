@@ -3,8 +3,10 @@ package com.danapprentech.promotion.controllers;
 import com.danapprentech.promotion.exception.ParserExeption;
 import com.danapprentech.promotion.exception.ResourceNotFoundException;
 import com.danapprentech.promotion.models.Coupon;
+import com.danapprentech.promotion.models.Couponhistory;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
+import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
 import io.swagger.annotations.*;
 import org.json.simple.JSONObject;
@@ -23,10 +25,11 @@ import java.util.List;
 public class CouponController {
     private static final Logger logger = LoggerFactory.getLogger(CouponController.class);
     private ICouponService iCouponService;
+    private ICouponHistoryService iCouponHistoryService;
     @Autowired
-    public CouponController(ICouponService iCouponService) {
-
+    public CouponController(ICouponService iCouponService, ICouponHistoryService iCouponHistoryService) {
         this.iCouponService = iCouponService;
+        this.iCouponHistoryService = iCouponHistoryService;
     }
 
     @ApiOperation(value = "View a list of available coupon", response = List.class)
@@ -224,6 +227,52 @@ public class CouponController {
             logger.warn ("Error: {}",e.getMessage ());
             logger.warn ("Stacktrace: {}"+e.getStackTrace ());
             throw new ParserExeption ("Failed to parse string to JSON");
+        }
+        return baseResponse;
+    }
+
+    @ApiOperation (value = "Api for rollback data when payment is failed")
+    @PostMapping(value = "/rollback")
+    public BaseResponse rollbackData(@RequestBody JSONObject jsonObject){
+        BaseResponse baseResponse = null;
+        int rollbackStatusCoupon = 0;
+        int rollbackDeleteData = 0;
+        try {
+            String couponId = (String) jsonObject.get ("couponId");
+            String paymentId = (String) jsonObject.get ("paymentId");
+            Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+            if(couponhistory != null){
+                CouponIssue couponIssue = iCouponService.getCouponDetailsById (couponId);
+                if(couponIssue != null){
+                    rollbackDeleteData = iCouponService.deleteById (couponId);
+                    if(rollbackDeleteData == 1){
+                        rollbackStatusCoupon = iCouponService.updateStatusTrue (jsonObject);
+                        if (rollbackStatusCoupon == 1) {
+                            logger.info ("Rollback data Success");
+                            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                                    .withCode (HttpStatus.OK.value ())
+                                    .withMessage ("Succeed")
+                                    .withData (null)
+                                    .build ();
+                        }else {
+                            logger.info ("Rollback data Failed");
+                            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                                    .withCode (HttpStatus.OK.value ())
+                                    .withMessage ("Failed")
+                                    .withData (null)
+                                    .build ();
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            logger.warn ("Error: {}",e.getMessage ());
+            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
+            baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
+                    .withMessage (e.getMessage ())
+                    .withData (null)
+                    .build ();
         }
         return baseResponse;
     }
