@@ -1,16 +1,12 @@
 package com.danapprentech.promotion.controllers;
 
-import com.danapprentech.promotion.exception.ParserExeption;
-import com.danapprentech.promotion.exception.ResourceNotFoundException;
-import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.models.Couponhistory;
+import com.danapprentech.promotion.repositories.GenerateCouponHistoryRepo;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
-import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
 import io.swagger.annotations.*;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +21,13 @@ import java.util.List;
 public class CouponController {
     private static final Logger logger = LoggerFactory.getLogger(CouponController.class);
     private ICouponService iCouponService;
-    private ICouponHistoryService iCouponHistoryService;
+    private GenerateCouponHistoryRepo generateCouponHistoryRepo;
     @Autowired
-    public CouponController(ICouponService iCouponService, ICouponHistoryService iCouponHistoryService) {
+    public CouponController(ICouponService iCouponService, GenerateCouponHistoryRepo generateCouponHistoryRepo) {
         this.iCouponService = iCouponService;
-        this.iCouponHistoryService = iCouponHistoryService;
+        this.generateCouponHistoryRepo = generateCouponHistoryRepo;
     }
 
-    @ApiOperation(value = "View a list of available coupon", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -40,13 +35,7 @@ public class CouponController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
 
-    @GetMapping(value = "/all")
-    public List<Coupon> getAllCoupon(){
-        logger.info ("get all coupon");
-        return iCouponService.getAllCoupons ();
-    }
-
-    @ApiOperation(value = "Get an coupon by coupon Id")
+    @ApiOperation(value = "View a list of available coupon", response = List.class)
     @GetMapping(value = "/detail/{couponId}")
     public BaseResponse getCouponDetailBasedOnCouponID(@PathVariable String couponId) throws ResourceNotFoundException {
         CouponIssue coupon = null;
@@ -100,7 +89,7 @@ public class CouponController {
                 logger.info ("Get coupon recommendation failed with member id: {}", jsonObject.get ("memberId"));
 
                 baseResponse = new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.NOT_FOUND.value ())
+                        .withCode (HttpStatus.OK.value ())
                         .withMessage ("No coupon available for this member")
                         .withData (couponList)
                         .build ();
@@ -196,40 +185,44 @@ public class CouponController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "Create new coupon for new member")
-    @PostMapping(value = "/create/coupon/first")
-    public BaseResponse createCouponForNewMember(@RequestBody String body) throws ParserExeption {
-        JSONParser parser = new JSONParser ();
-        JSONObject jsonObject;
-        String response="Failed";
-        BaseResponse baseResponse = null;
-        try {
-            logger.info ("try to update coupon status to be true");
-            jsonObject = (JSONObject) parser.parse (body);
-            int rows = iCouponService.firstCoupon (jsonObject);
-            if(rows !=0){
-                logger.info ("generate new coupon for new member success");
-                response = "Generate new coupon successfully, and save data by "+rows+" (rows)";
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Success")
-                        .withData (response)
-                        .build ();
-            }else{
-                logger.info ("generate new coupon for new member failed");
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Failed to save data")
-                        .withData (response)
-                        .build ();
-            }
-        }catch (Exception e){
-            logger.warn ("Error: {}",e.getMessage ());
-            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
-            throw new ParserExeption ("Failed to parse string to JSON");
-        }
-        return baseResponse;
-    }
+//    @ApiOperation(value = "Create new coupon for new member")
+//    @PostMapping(value = "/create/coupon/first")
+//    public BaseResponse createCouponForNewMember(@RequestBody String body) throws ParserExeption {
+//        JSONParser parser = new JSONParser ();
+//        JSONObject jsonObject;
+//        String response="Failed";
+//        BaseResponse baseResponse = null;
+//        try {
+//            logger.info ("try to generate coupon for new member");
+//            jsonObject = (JSONObject) parser.parse (body);
+//            int rows = iCouponService.firstCoupon (jsonObject);
+//            if(rows !=0){
+//                logger.info ("generate new coupon for new member success");
+//                response = "Generate new coupon successfully, and save data by "+rows+" (rows)";
+//                baseResponse= new BaseResponse.BaseResponseBuilder ()
+//                        .withCode (HttpStatus.OK.value ())
+//                        .withMessage ("Success")
+//                        .withData (response)
+//                        .build ();
+//            }else{
+//                logger.info ("generate new coupon for new member failed");
+//                baseResponse= new BaseResponse.BaseResponseBuilder ()
+//                        .withCode (HttpStatus.OK.value ())
+//                        .withMessage ("Failed to save data")
+//                        .withData (response)
+//                        .build ();
+//            }
+//        }catch (Exception e){
+//            logger.warn ("Error: {}",e.getMessage ());
+//            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
+//            baseResponse= new BaseResponse.BaseResponseBuilder ()
+//                    .withCode (HttpStatus.OK.value ())
+//                    .withMessage (e.getMessage ())
+//                    .withData (response)
+//                    .build ();
+//        }
+//        return baseResponse;
+//    }
 
     @ApiOperation (value = "Api for rollback data when payment is failed")
     @PostMapping(value = "/rollback")
@@ -238,9 +231,10 @@ public class CouponController {
         int rollbackStatusCoupon = 0;
         int rollbackDeleteData = 0;
         try {
+            logger.info ("try to rollback data");
             String couponId = (String) jsonObject.get ("couponId");
             String paymentId = (String) jsonObject.get ("paymentId");
-            Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+            Couponhistory couponhistory = generateCouponHistoryRepo.findAllByPaymentId (paymentId);
             if(couponhistory != null){
                 CouponIssue couponIssue = iCouponService.getCouponDetailsById (couponId);
                 if(couponIssue != null){
@@ -274,6 +268,39 @@ public class CouponController {
                     .withData (null)
                     .build ();
         }
+        return baseResponse;
+    }
+
+    @ApiOperation(value = "Rollback status coupon to be true")
+    @PutMapping("/update/coupon/true")
+    public BaseResponse updateCouponStatusTrue(@RequestBody JSONObject jsonObject){
+        BaseResponse baseResponse = null;
+        try{
+            logger.info ("try to update coupon status to be true");
+            if(iCouponService.updateStatusTrue (jsonObject) !=0){
+                logger.info ("update coupon status success");
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (HttpStatus.OK.value ())
+                        .withMessage ("Success")
+                        .withData ("rollback coupon status successfully")
+                        .build ();
+                }else{
+                    logger.info ("update coupon status failed");
+                    baseResponse= new BaseResponse.BaseResponseBuilder ()
+                        .withCode (HttpStatus.OK.value ())
+                        .withMessage ("Failed")
+                        .withData ("rollback coupon status failed")
+                        .build ();
+               }
+            }catch (Exception e){
+                logger.warn ("Error: {}",e.getMessage ());
+                logger.warn ("Stacktrace: {}"+e.getStackTrace ());
+                baseResponse= new BaseResponse.BaseResponseBuilder ()
+                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
+                    .withMessage (e.getMessage ())
+                    .withData ("null")
+                    .build ();
+            }
         return baseResponse;
     }
 }

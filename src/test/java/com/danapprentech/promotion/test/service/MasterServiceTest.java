@@ -1,7 +1,8 @@
+
 package com.danapprentech.promotion.test.service;
 
 import com.danapprentech.promotion.models.Mcoupon;
-import com.danapprentech.promotion.repositories.interfaces.IMasterCouponRepository;
+import com.danapprentech.promotion.repositories.MasterRepo;
 import com.danapprentech.promotion.services.interfaces.IMasterCouponService;
 import com.danapprentech.promotion.test.controller.AbstractTest;
 import org.junit.Before;
@@ -23,9 +24,9 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @Transactional
 @SpringBootTest
-public class MasterCouponServiceTest extends AbstractTest {
+public class MasterServiceTest extends AbstractTest {
     @MockBean
-    private IMasterCouponRepository iMasterCouponRepository;
+    private MasterRepo masterRepoMock;
     @Autowired
     private IMasterCouponService iMasterCouponService;
 
@@ -43,14 +44,14 @@ public class MasterCouponServiceTest extends AbstractTest {
                 .withMCouponMinTransaction (0L)
                 .withPaymentMethod ("000")
                 .build ();
-        when (iMasterCouponRepository.getDetailById (anyString ())).thenReturn (mcoupon);
+        when (masterRepoMock.findAllByMCouponId (anyString ())).thenReturn (mcoupon);
         String id = "Id";
         Mcoupon obj = iMasterCouponService.getDetailById (id);
         assertTrue (obj.getmCouponId ().equals (mcoupon.getmCouponId ()));
     }
     @Test
     public void getDetailByIdTest_Failed(){
-        when (iMasterCouponRepository.getDetailById (anyString ())).thenReturn (null);
+        when (masterRepoMock.findAllByMCouponId (anyString ())).thenReturn (null);
         String id = "Id";
         Mcoupon obj = iMasterCouponService.getDetailById (id);
         assertTrue (obj == null);
@@ -64,14 +65,18 @@ public class MasterCouponServiceTest extends AbstractTest {
                 .withMCouponMinTransaction (0L)
                 .withPaymentMethod ("000")
                 .build ();
-        when (iMasterCouponRepository.getAllById (anyString (),anyLong ())).thenReturn (mcoupon);
+        when (masterRepoMock.findAllByMCouponIdAndAndMCouponAmount (anyString (),anyLong ()))
+                .thenReturn (mcoupon);
+
         String id = "Id";
         Mcoupon obj = iMasterCouponService.getAllById (id,200L);
         assertTrue (obj.getmCouponId ().equals (mcoupon.getmCouponId ()));
     }
     @Test
     public void getAllByIdTest_Failed(){
-        when (iMasterCouponRepository.getAllById (anyString (),anyLong ())).thenReturn (null);
+        when (masterRepoMock.findAllByMCouponIdAndAndMCouponAmount (anyString (),anyLong ()))
+                .thenReturn (null);
+
         String id = "Id";
         Mcoupon obj = iMasterCouponService.getAllById (id,200L);
         assertTrue (obj == null);
@@ -86,8 +91,8 @@ public class MasterCouponServiceTest extends AbstractTest {
                 .withPaymentMethod ("000")
                 .build ();
         ArrayList<Mcoupon> list = new ArrayList<> ();
-        list.add (mcoupon);
-        when (iMasterCouponRepository.checkMinimumTransaction (any ())).thenReturn (list);
+        boolean add = list.add (mcoupon);
+        when (masterRepoMock.checkMinimumTransaction (anyLong ())).thenReturn (list);
         String id = "Id";
         List<Mcoupon> listObj = iMasterCouponService.checkMinimumTransaction (200L);
         assertTrue(listObj.get (0).getmCouponId ().equals (mcoupon.getmCouponId ()));
@@ -95,7 +100,7 @@ public class MasterCouponServiceTest extends AbstractTest {
     }
     @Test
     public void checkMinimumTest_Failed(){
-        when (iMasterCouponRepository.checkMinimumTransaction (any ())).thenReturn (new ArrayList<> ());
+        when (masterRepoMock.checkMinimumTransaction (anyLong ())).thenReturn (new ArrayList<> ());
         String id = "Id";
         List<Mcoupon> listObj = iMasterCouponService.checkMinimumTransaction (200L);
         assertFalse (!listObj.isEmpty ());
@@ -109,14 +114,14 @@ public class MasterCouponServiceTest extends AbstractTest {
                 .withMCouponMinTransaction (0L)
                 .withPaymentMethod ("000")
                 .build ();
-        when (iMasterCouponRepository.getCouponNewMember (anyString ())).thenReturn (mcoupon);
+        when (masterRepoMock.findAllByMCouponDescription (anyString ())).thenReturn (mcoupon);
         String desc = "coupon description";
         Mcoupon obj = iMasterCouponService.getCouponNewMember (desc);
         assertTrue (obj.getmCouponId ().equals (mcoupon.getmCouponId ()));
     }
     @Test
     public void getDataByDescriptionTest_Failed(){
-        when (iMasterCouponRepository.getCouponNewMember (anyString ())).thenReturn (null);
+        when (masterRepoMock.findAllByMCouponDescription (anyString ())).thenReturn (null);
         String desc = "coupon description";
         Mcoupon obj = iMasterCouponService.getCouponNewMember (desc);
         assertTrue (obj == null);
@@ -130,7 +135,8 @@ public class MasterCouponServiceTest extends AbstractTest {
                 .withMCouponMinTransaction (0L)
                 .withPaymentMethod ("000")
                 .build ();
-        when (iMasterCouponRepository.saveOrUpdate (any ())).thenReturn (1);
+        when (masterRepoMock.insertData (anyString (),anyString (),anyLong (),anyLong (),anyString ()))
+                .thenReturn (1);
         int value = iMasterCouponService.saveOrUpdate (mcoupon);
         assertTrue (value==1);
     }
@@ -143,7 +149,9 @@ public class MasterCouponServiceTest extends AbstractTest {
                 .withMCouponMinTransaction (0L)
                 .withPaymentMethod ("000")
                 .build ();
-        when (iMasterCouponRepository.saveOrUpdate (any ())).thenReturn (0);
+        when (masterRepoMock.insertData (anyString (),anyString (),anyLong (),anyLong (),anyString ()))
+                .thenReturn (0);
+
         int value = iMasterCouponService.saveOrUpdate (mcoupon);
         assertTrue (value==0);
     }

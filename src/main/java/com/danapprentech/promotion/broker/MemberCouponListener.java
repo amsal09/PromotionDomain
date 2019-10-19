@@ -28,6 +28,7 @@ public class MemberCouponListener {
             logger.info ("message body from member: {} ",data);
             int value = iCouponService.firstCoupon (data);
             if(value!=1){
+                logger.info ("insert data failed");
                 producer.sendToExchange (message);
             }
         }catch (Exception e){

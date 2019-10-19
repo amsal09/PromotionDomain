@@ -1,8 +1,8 @@
 package com.danapprentech.promotion.broker;
 
 import com.danapprentech.promotion.models.Couponhistory;
+import com.danapprentech.promotion.repositories.GenerateCouponHistoryRepo;
 import com.danapprentech.promotion.response.CouponIssue;
-import com.danapprentech.promotion.services.interfaces.ICouponHistoryService;
 import com.danapprentech.promotion.services.interfaces.ICouponService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class PaymentCouponListener {
     private static final Logger logger = LoggerFactory.getLogger(PaymentCouponListener.class);
     @Autowired
-    private ICouponHistoryService iCouponHistoryService;
+    private GenerateCouponHistoryRepo generateCouponHistoryRepo;
     @Autowired
     private ICouponService iCouponService;
 
@@ -38,7 +38,7 @@ public class PaymentCouponListener {
             String paymentId = (String) data.get ("paymentId");
             String status = (String) data.get ("status");
             logger.info ("Try to get coupon history with payment id: {}",paymentId);
-            Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+            Couponhistory couponhistory = generateCouponHistoryRepo.findAllByPaymentId (paymentId);
             if(couponhistory != null){
                 System.out.println ("Exist");
                 if(status.equalsIgnoreCase ("failed")){
@@ -75,7 +75,7 @@ public class PaymentCouponListener {
             int responseValue = iCouponService.updateStatusTrue (jsonObject);
             if(responseValue == 1){
                 String paymentId =(String) jsonObject.get ("paymentId");
-                Couponhistory couponhistory = iCouponHistoryService.getDataByPaymentId (paymentId);
+                Couponhistory couponhistory = generateCouponHistoryRepo.findAllByPaymentId (paymentId);
                 if(couponhistory!=null){
                     iCouponService.deleteById (couponhistory.getCouponId ());
                 }
