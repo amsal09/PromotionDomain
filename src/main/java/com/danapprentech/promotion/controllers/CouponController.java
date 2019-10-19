@@ -37,7 +37,7 @@ public class CouponController {
 
     @ApiOperation(value = "View a list of available coupon", response = List.class)
     @GetMapping(value = "/detail/{couponId}")
-    public BaseResponse getCouponDetailBasedOnCouponID(@PathVariable String couponId) throws ResourceNotFoundException {
+    public BaseResponse getCouponDetailBasedOnCouponID(@PathVariable String couponId){
         CouponIssue coupon = null;
         BaseResponse baseResponse=null;
         try {
