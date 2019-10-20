@@ -151,6 +151,16 @@ public class CouponControllerTest extends AbstractTest{
     }
 
     @Test
+    public void getCouponRecommendationTest_ErrorParse() throws Exception {
+        String url = "/promotion/recommended";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content ("A")).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(500, status);
+    }
+
+    @Test
     public void createNewCouponTest_Success() throws Exception {
         String url = "/promotion/create/coupon";
         JSONObject jsonObject = new JSONObject ();

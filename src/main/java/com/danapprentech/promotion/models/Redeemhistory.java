@@ -10,6 +10,7 @@ import javax.persistence.Id;
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @ApiModel(description = "Redeem History")
 @Entity
 public class Redeemhistory {

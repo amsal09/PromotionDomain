@@ -335,6 +335,54 @@ public class CouponServiceTest extends AbstractTest {
     }
 
     @Test
+    public void updateCouponStatusTest_Success_IfPaymentMethodNotAll() {
+        Coupon coupon = Coupon.builder ()
+                .couponId ("CouponId")
+                .mCouponId ("Mid")
+                .memberId ("USRid")
+                .couponExpired ("2019-10-24")
+                .couponStatus ("available")
+                .createTime (LocalDateTime.now ())
+                .updateTime (LocalDateTime.now ().plusDays (1))
+                .build ();
+        CouponIssue couponIssue = new CouponIssue.CouponIssuebuilder ()
+                .withMemberId ("MemberId")
+                .withCouponName ("Coupon 12K")
+                .withCouponAmount (12000L)
+                .withPaymentMethod ("000")
+                .withCouponStatus ("Available")
+                .withCouponExpired ("2019-10-24")
+                .withCouponId ("CouponId")
+                .build ();
+        Mcoupon mcoupon = new Mcoupon.MasterCouponBuilder ()
+                .withMCouponId ("Mid")
+                .withMCouponDesc ("Coupon")
+                .withMCouponAmount (12000L)
+                .withMCouponMinTransaction (0L)
+                .withPaymentMethod ("001")
+                .build ();
+        Redeemhistory redeemhistory = Redeemhistory.builder ()
+                .couponId ("CouponId")
+                .memberId ("memberId")
+                .idRedeem ("ID")
+                .paymentId ("paymentId")
+                .build ();
+        when (redeemHistoryRepoMock.findAllByPaymentId (anyString ())).thenReturn (null);
+        when (masterRepoMock.findAllByMCouponId (anyString ())).thenReturn (mcoupon);
+        when (couponRepoMock.findAllByCouponId (anyString ())).thenReturn (coupon);
+        when (redeemHistoryRepoMock.save (any ())).thenReturn (redeemhistory);
+        when (couponRepoMock.updateCouponStatus (anyString (), anyString (), any ())).thenReturn (1);
+        JSONObject jsonObject = new JSONObject ();
+        jsonObject.put ("couponId", "CouponId");
+        jsonObject.put ("memberId", "MemberId");
+        jsonObject.put ("paymentMethodCode", "001");
+        jsonObject.put ("paymentId", "cf7ec9ed-0614-49c2-bec9-ed0614b9c275");
+        jsonObject.put ("couponAmount", 12000);
+        int value = iCouponService.updateStatus (jsonObject);
+        assertEquals (1, value);
+    }
+
+    @Test
     public void updateCouponStatusTest_Failed() {
         Coupon coupon = Coupon.builder ()
                 .couponId ("CouponId")

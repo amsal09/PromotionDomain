@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @ApiModel(description = "All details about coupon")

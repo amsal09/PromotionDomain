@@ -14,6 +14,7 @@ import javax.persistence.Id;
 @Entity
 @Builder
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class Couponhistory {
     @ApiModelProperty(notes = "Id of coupon history Table")

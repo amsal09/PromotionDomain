@@ -24,8 +24,6 @@ public class PaymentCouponListener {
     private ICouponService iCouponService;
 
     private Producer producer = new Producer ("queue.payment.promotion");
-    private Producer rollback = new Producer ("queue.payment.rollback");
-    private JSONObject json = new JSONObject ();
 
     @RabbitListener(queues = "queue.payment.promotion")
     @RabbitHandler
@@ -41,11 +39,7 @@ public class PaymentCouponListener {
             Couponhistory couponhistory = generateCouponHistoryRepo.findAllByPaymentId (paymentId);
             if(couponhistory != null){
                 System.out.println ("Exist");
-                if(status.equalsIgnoreCase ("failed")){
-                    rollbackData (data);
-                }else {
-                    logger.info ("Coupon has been generated");
-                }
+                logger.info ("Coupon has been generated");
             }else{
                 if(status.equalsIgnoreCase ("ON_PROGRESS")){
                     logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
@@ -58,9 +52,6 @@ public class PaymentCouponListener {
                         logger.info ("Created coupon success");
 
                     }
-                }else{
-                    logger.info ("Try to update coupon status with coupon id: {}",data.get ("couponId"));
-                    rollbackData (data);
                 }
             }
         }catch (Exception e){
@@ -69,51 +60,5 @@ public class PaymentCouponListener {
             e.printStackTrace ();
         }
     }
-    public void rollbackData(JSONObject jsonObject){
-        try{
-            JSONObject json = new JSONObject ();
-            int responseValue = iCouponService.updateStatusTrue (jsonObject);
-            if(responseValue == 1){
-                String paymentId =(String) jsonObject.get ("paymentId");
-                Couponhistory couponhistory = generateCouponHistoryRepo.findAllByPaymentId (paymentId);
-                if(couponhistory!=null){
-                    iCouponService.deleteById (couponhistory.getCouponId ());
-                }
-                logger.info ("try to publish data rollback to queue success");
-                json.put ("paymentId", jsonObject.get ("paymentId"));
-                json.put ("domain", "promotion");
-                json.put ("status", "Succeed");
-                rollback.sendToExchange (json.toString ());
-            }else {
-                CouponIssue coupon = iCouponService.getCouponDetailsById ((String)jsonObject.get ("couponId"));
-                if(coupon==null) {
-                    logger.info ("try to publish data rollback to queue failed");
-                    json.put ("paymentId", jsonObject.get ("paymentId"));
-                    json.put ("domain", "promotion");
-                    json.put ("status", "Failed");
-                    rollback.sendToExchange (json.toString ());
-                }else{
-                    logger.info ("try to publish data rollback to queue success");
-                    json.put ("paymentId", jsonObject.get ("paymentId"));
-                    json.put ("domain", "promotion");
-                    json.put ("status", "Succeed");
-                    rollback.sendToExchange (json.toString ());
-                }
-            }
-        }catch (Exception e){
-            logger.warn ("Error: "+e.getMessage ());
-            logger.warn ("{}"+e.getStackTrace ());
-        }
-    }
 
-    public void successBuild(JSONObject jsonObject){
-        json.put ("paymentId", jsonObject.get ("paymentId"));
-        json.put ("domain", "promotion");
-        json.put ("status", "Succeed");
-    }
-    public void failedBuild(JSONObject jsonObject){
-        json.put ("paymentId", jsonObject.get ("paymentId"));
-        json.put ("domain", "promotion");
-        json.put ("status", "Failed");
-    }
 }
