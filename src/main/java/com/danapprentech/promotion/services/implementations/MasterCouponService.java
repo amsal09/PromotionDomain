@@ -50,6 +50,7 @@ public class MasterCouponService implements IMasterCouponService {
     @Override
     @Transactional
     public List<Mcoupon> checkMinimumTransaction(Long amount) {
+
         return masterRepo.checkMinimumTransaction (amount);
     }
 

@@ -7,10 +7,8 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Setter
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @ApiModel(description = "Redeem History")
 @Entity

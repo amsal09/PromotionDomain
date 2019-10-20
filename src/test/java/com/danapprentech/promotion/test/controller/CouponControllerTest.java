@@ -34,7 +34,6 @@ public class CouponControllerTest extends AbstractTest{
         super.setUp();
     }
 
-
     @Test
     public void getCouponDetailTest_Success() throws Exception {
         CouponIssue couponIssue = new CouponIssue.CouponIssuebuilder ()
@@ -254,6 +253,5 @@ public class CouponControllerTest extends AbstractTest{
         int status = mvcResult.getResponse().getStatus();
         assertEquals(500, status);
     }
-
 
 }

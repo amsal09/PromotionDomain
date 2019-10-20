@@ -12,10 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @ApiModel(description = "All details about coupon")
