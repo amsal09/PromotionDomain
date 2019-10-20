@@ -238,7 +238,7 @@ public class CouponController {
             if(couponhistory != null){
                 CouponIssue couponIssue = iCouponService.getCouponDetailsById (couponhistory.getCouponId ());
                 if(couponIssue != null){
-                    rollbackDeleteData = iCouponService.deleteById (couponId);
+                    rollbackDeleteData = iCouponService.deleteById (couponhistory.getCouponId ());
                     if(rollbackDeleteData == 1){
                         rollbackStatusCoupon = iCouponService.updateStatusTrue (jsonObject);
                         if (rollbackStatusCoupon == 1) {
