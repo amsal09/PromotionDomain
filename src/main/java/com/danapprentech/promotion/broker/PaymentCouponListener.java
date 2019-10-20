@@ -41,7 +41,7 @@ public class PaymentCouponListener {
                 System.out.println ("Exist");
                 logger.info ("Coupon has been generated");
             }else{
-                if(status.equalsIgnoreCase ("ON_PROGRESS")){
+                if(status.equalsIgnoreCase ("SUCCEED")){
                     logger.info ("Try to save coupon history with payment id: {}",data.get ("paymentId"));
                     String response = iCouponService.saveOrUpdateCoupon (data);
                     if(response.equalsIgnoreCase ("Failed")){

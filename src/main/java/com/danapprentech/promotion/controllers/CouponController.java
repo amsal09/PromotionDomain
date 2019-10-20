@@ -258,6 +258,23 @@ public class CouponController {
                         }
                     }
                 }
+            }else{
+                rollbackStatusCoupon = iCouponService.updateStatusTrue (jsonObject);
+                if (rollbackStatusCoupon == 1) {
+                    logger.info ("Rollback data Success");
+                    baseResponse= new BaseResponse.BaseResponseBuilder ()
+                            .withCode (HttpStatus.OK.value ())
+                            .withMessage ("Succeed")
+                            .withData (null)
+                            .build ();
+                }else {
+                    logger.info ("Rollback data Failed");
+                    baseResponse= new BaseResponse.BaseResponseBuilder ()
+                            .withCode (HttpStatus.OK.value ())
+                            .withMessage ("Failed")
+                            .withData (null)
+                            .build ();
+                }
             }
         }catch (Exception e){
             logger.warn ("Error: {}",e.getMessage ());

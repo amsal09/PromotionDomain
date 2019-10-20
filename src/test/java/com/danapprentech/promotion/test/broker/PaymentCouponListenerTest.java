@@ -36,7 +36,7 @@ public class PaymentCouponListenerTest{
         when (generateMock.findAllByPaymentId (anyString ())).thenReturn (couponhistory);
         when (couponMock.saveOrUpdateCoupon (any ())).thenReturn ("Success");
         JSONObject json = new JSONObject ();
-        json.put ("status","ON_PROGRESS");
+        json.put ("status","SUCCEED");
         json.put ("paymentId","paymentId");
         json.put ("couponId","couponId");
         json.put ("memberId","memberId");
@@ -48,7 +48,7 @@ public class PaymentCouponListenerTest{
         when (generateMock.findAllByPaymentId (anyString ())).thenReturn (null);
         when (couponMock.saveOrUpdateCoupon (any ())).thenReturn ("Success");
         JSONObject json = new JSONObject ();
-        json.put ("status","ON_PROGRESS");
+        json.put ("status","SUCCEED");
         json.put ("paymentId","paymentId");
         json.put ("couponId","couponId");
         json.put ("memberId","memberId");
@@ -60,7 +60,7 @@ public class PaymentCouponListenerTest{
         when (generateMock.findAllByPaymentId (anyString ())).thenReturn (null);
         when (couponMock.saveOrUpdateCoupon (any ())).thenReturn ("Failed");
         JSONObject json = new JSONObject ();
-        json.put ("status","ON_PROGRESS");
+        json.put ("status","SUCCEED");
         json.put ("paymentId","paymentId");
         json.put ("couponId","couponId");
         json.put ("memberId","memberId");
