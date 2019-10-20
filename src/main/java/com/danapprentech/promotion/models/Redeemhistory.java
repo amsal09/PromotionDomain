@@ -7,7 +7,7 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Getter
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

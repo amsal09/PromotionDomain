@@ -1,5 +1,6 @@
 package com.danapprentech.promotion.test.controller;
 
+import com.danapprentech.promotion.models.Coupon;
 import com.danapprentech.promotion.response.BaseResponse;
 import com.danapprentech.promotion.response.CouponIssue;
 import com.danapprentech.promotion.services.interfaces.ICouponService;

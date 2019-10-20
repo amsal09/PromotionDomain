@@ -236,7 +236,7 @@ public class CouponController {
             String paymentId = (String) jsonObject.get ("paymentId");
             Couponhistory couponhistory = generateCouponHistoryRepo.findAllByPaymentId (paymentId);
             if(couponhistory != null){
-                CouponIssue couponIssue = iCouponService.getCouponDetailsById (couponId);
+                CouponIssue couponIssue = iCouponService.getCouponDetailsById (couponhistory.getCouponId ());
                 if(couponIssue != null){
                     rollbackDeleteData = iCouponService.deleteById (couponId);
                     if(rollbackDeleteData == 1){
