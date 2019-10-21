@@ -232,7 +232,6 @@ public class CouponController {
         int rollbackDeleteData = 0;
         try {
             logger.info ("try to rollback data");
-            String couponId = (String) jsonObject.get ("couponId");
             String paymentId = (String) jsonObject.get ("paymentId");
             Couponhistory couponhistory = generateCouponHistoryRepo.findAllByPaymentId (paymentId);
             if(couponhistory != null){

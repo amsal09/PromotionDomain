@@ -17,7 +17,7 @@ public interface CouponRepo extends JpaRepository<Coupon, String> {
     @Query("FROM Coupon WHERE couponId=:couponId")
     Coupon findAllByCouponId(String couponId);
 
-    @Query("FROM Coupon WHERE memberId=:memberId AND couponExpired<=:time AND couponStatus='available'")
+    @Query("FROM Coupon WHERE memberId=:memberId AND couponExpired>=:time AND couponStatus='available'")
     List<Coupon> getRecommendation(String memberId, String time);
 
     @Modifying

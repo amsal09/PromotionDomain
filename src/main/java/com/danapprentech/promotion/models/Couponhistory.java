@@ -13,7 +13,6 @@ import javax.persistence.Id;
 @ApiModel(description = "Update Coupon Status History")
 @Entity
 @Builder
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Couponhistory {
@@ -27,4 +26,7 @@ public class Couponhistory {
     @ApiModelProperty(notes = "Member Id")
     private String memberId;
 
+    public String getCouponId() {
+        return couponId;
+    }
 }
