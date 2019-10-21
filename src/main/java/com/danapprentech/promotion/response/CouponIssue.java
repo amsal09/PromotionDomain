@@ -2,7 +2,6 @@ package com.danapprentech.promotion.response;
 
 import org.springframework.stereotype.Component;
 
-@Component
 public class CouponIssue{
 
     private String couponId;

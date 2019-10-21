@@ -185,44 +185,6 @@ public class CouponController {
         return baseResponse;
     }
 
-//    @ApiOperation(value = "Create new coupon for new member")
-//    @PostMapping(value = "/create/coupon/first")
-//    public BaseResponse createCouponForNewMember(@RequestBody String body) throws ParserExeption {
-//        JSONParser parser = new JSONParser ();
-//        JSONObject jsonObject;
-//        String response="Failed";
-//        BaseResponse baseResponse = null;
-//        try {
-//            logger.info ("try to generate coupon for new member");
-//            jsonObject = (JSONObject) parser.parse (body);
-//            int rows = iCouponService.firstCoupon (jsonObject);
-//            if(rows !=0){
-//                logger.info ("generate new coupon for new member success");
-//                response = "Generate new coupon successfully, and save data by "+rows+" (rows)";
-//                baseResponse= new BaseResponse.BaseResponseBuilder ()
-//                        .withCode (HttpStatus.OK.value ())
-//                        .withMessage ("Success")
-//                        .withData (response)
-//                        .build ();
-//            }else{
-//                logger.info ("generate new coupon for new member failed");
-//                baseResponse= new BaseResponse.BaseResponseBuilder ()
-//                        .withCode (HttpStatus.OK.value ())
-//                        .withMessage ("Failed to save data")
-//                        .withData (response)
-//                        .build ();
-//            }
-//        }catch (Exception e){
-//            logger.warn ("Error: {}",e.getMessage ());
-//            logger.warn ("Stacktrace: {}"+e.getStackTrace ());
-//            baseResponse= new BaseResponse.BaseResponseBuilder ()
-//                    .withCode (HttpStatus.OK.value ())
-//                    .withMessage (e.getMessage ())
-//                    .withData (response)
-//                    .build ();
-//        }
-//        return baseResponse;
-//    }
 
     @ApiOperation (value = "Api for rollback data when payment is failed")
     @PostMapping(value = "/rollback")
@@ -287,36 +249,4 @@ public class CouponController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "Rollback status coupon to be true")
-    @PutMapping("/update/coupon/true")
-    public BaseResponse updateCouponStatusTrue(@RequestBody JSONObject jsonObject){
-        BaseResponse baseResponse = null;
-        try{
-            logger.info ("try to update coupon status to be true");
-            if(iCouponService.updateStatusTrue (jsonObject) !=0){
-                logger.info ("update coupon status success");
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Success")
-                        .withData ("rollback coupon status successfully")
-                        .build ();
-                }else{
-                    logger.info ("update coupon status failed");
-                    baseResponse= new BaseResponse.BaseResponseBuilder ()
-                        .withCode (HttpStatus.OK.value ())
-                        .withMessage ("Failed")
-                        .withData ("rollback coupon status failed")
-                        .build ();
-               }
-            }catch (Exception e){
-                logger.warn ("Error: {}",e.getMessage ());
-                logger.warn ("Stacktrace: {}"+e.getStackTrace ());
-                baseResponse= new BaseResponse.BaseResponseBuilder ()
-                    .withCode (HttpStatus.INTERNAL_SERVER_ERROR.value ())
-                    .withMessage (e.getMessage ())
-                    .withData ("null")
-                    .build ();
-            }
-        return baseResponse;
-    }
 }
